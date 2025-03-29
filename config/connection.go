@@ -13,9 +13,6 @@ import (
 var DB *gorm.DB
 
 func ConnectDatabase() (*gorm.DB, error) {
-	// MYSQL DSN
-	// dsn := "mrg:123123123@tcp(localhost:3306)/cerdikia?charset=utf8mb4&parseTime=True&loc=Local"
-
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
