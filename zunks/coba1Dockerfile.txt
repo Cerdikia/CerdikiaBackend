@@ -1,0 +1,45 @@
+# Gunakan base image multi-stage untuk Go
+# FROM golang:1.20 AS builder
+FROM golang:1.24.1 AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy semua file ke dalam container
+COPY . .
+
+# Download dependencies
+RUN go mod tidy
+
+# Build aplikasi
+RUN go build -o main .
+
+# Gunakan base image untuk runtime
+FROM ubuntu:20.04
+
+# Install MySQL Server
+
+# RUN apt-get update && apt-get install -y mysql-server && apt-get clean
+
+# RUN TZ=Etc/UTC apt-get update && apt-get install -y mysql-server && apt-get clean
+RUN apt-get update && apt-get install -y tzdata && echo "tzdata tzdata/Areas select Asia" | debconf-set-selections && echo "tzdata tzdata/Zones/Asia select Jakarta" | debconf-set-selections && DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server && apt-get clean
+
+
+# Set working directory
+WORKDIR /app
+
+# Copy aplikasi dari stage builder
+COPY --from=builder /app/main .
+
+# Copy konfigurasi MySQL
+# COPY my.cnf /etc/mysql/my.cnf
+
+# Copy skrip untuk menjalankan MySQL dan API
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Expose port MySQL dan API
+EXPOSE 3306 8080
+
+# Jalankan entrypoint
+CMD ["/entrypoint.sh"]
