@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# Start MySQL in the background
+service mysql start
+
+# Tunggu MySQL siap
+sleep 10
+
+# Buat database dan user
+mysql -u root -e "CREATE USER IF NOT EXISTS 'mrg'@'%' IDENTIFIED BY '123123123';"
+mysql -u root -e "GRANT ALL PRIVILEGES ON mydb.* TO 'mrg'@'%'; FLUSH PRIVILEGES;"
+
+mysql -u root -e "CREATE DATABASE IF NOT EXISTS cerdikia;"
+
+mysql -u root -e "CREATE TABLE `users` (
+  `email` varchar(255) NOT NULL,
+  `nama` varchar(255) NOT NULL,
+  `kelas` varchar(50) NOT NULL,
+  `date_created` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `role` enum('siswa','admin','guru') NOT NULL DEFAULT 'siswa',
+  PRIMARY KEY (`email`)
+);"
+
+mysql -u root -e "CREATE TABLE `mapel` (
+  `id_mapel` int NOT NULL AUTO_INCREMENT,
+  `mapel` varchar(255) NOT NULL,
+  PRIMARY KEY (`id_mapel`)
+);"
+
+mysql -u root -e "CREATE TABLE `soal` (
+  `id_soal` int NOT NULL AUTO_INCREMENT,
+  `id_module` int NOT NULL,
+  `soal` text NOT NULL,
+  `jenis` enum('pilihan_ganda','essay') NOT NULL,
+  `jawaban` text,
+  `opsi_jawaban` json DEFAULT NULL,
+  PRIMARY KEY (`id_soal`,`id_module`),
+  KEY `id_module` (`id_module`)
+);"
+
+mysql -u root -e "CREATE TABLE `user_points` (
+  `email` varchar(255) NOT NULL,
+  `point` int DEFAULT '0',
+  PRIMARY KEY (`email`),
+  CONSTRAINT `user_points_ibfk_1` FOREIGN KEY (`email`) REFERENCES `users` (`email`) ON DELETE CASCADE
+);"
+
+mysql -u root -e "CREATE TABLE `user_progres` (
+  `email` varchar(255) NOT NULL,
+  `id_mapel` int NOT NULL,
+  `progres` json DEFAULT NULL,
+  PRIMARY KEY (`email`,`id_mapel`),
+  KEY `id_mapel` (`id_mapel`),
+  CONSTRAINT `user_progres_ibfk_1` FOREIGN KEY (`email`) REFERENCES `users` (`email`) ON DELETE CASCADE,
+  CONSTRAINT `user_progres_ibfk_2` FOREIGN KEY (`id_mapel`) REFERENCES `mapel` (`id_mapel`) ON DELETE CASCADE
+);"
+
+mysql -u root -e "CREATE TABLE `modules` (
+  `id_module` int NOT NULL AUTO_INCREMENT,
+  `id_mapel` int NOT NULL,
+  `kelas` varchar(50) NOT NULL,
+  `module` int DEFAULT NULL,
+  `module_judul` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `module_deskripsi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  PRIMARY KEY (`id_module`),
+  KEY `id_module` (`module`),
+  KEY `id_mapel` (`id_mapel`),
+  CONSTRAINT `modules_ibfk_2` FOREIGN KEY (`module`) REFERENCES `soal` (`id_module`) ON DELETE CASCADE,
+  CONSTRAINT `modules_ibfk_3` FOREIGN KEY (`id_mapel`) REFERENCES `mapel` (`id_mapel`) ON DELETE CASCADE
+);"
+
+# Jalankan API
+./main
