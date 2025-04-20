@@ -4,6 +4,7 @@ import (
 	"coba1BE/config"
 	// "coba1BE/controllers"
 	"coba1BE/models"
+	"coba1BE/models/points"
 	"coba1BE/models/users"
 	"coba1BE/repositories"
 	"coba1BE/services"
@@ -25,9 +26,11 @@ func CreateUser(c *gin.Context) {
 		var siswa users.Siswa
 		if err = c.ShouldBindJSON(&siswa); err == nil {
 			err = db.Create(&siswa).Error
-			if err == nil {
+			errPoint := repositories.CreatePointFirst(siswa.Email)
+			errVerivied := repositories.CreateAcountVerifiedFirst(siswa.Email)
+			if err == nil || errPoint == nil || errVerivied == nil {
 				c.JSON(201, gin.H{
-					"message": "User dengan nama " + siswa.Nama + " berhasil dibuat",
+					"message": "User dengan email " + siswa.Email + " berhasil dibuat",
 				})
 				return
 			}
@@ -66,9 +69,7 @@ func CreateUser(c *gin.Context) {
 }
 
 func GetSiswa(c *gin.Context) {
-	var response models.BaseResponseModel
-
-	response = repositories.GetAllSiswa()
+	response := repositories.GetAllSiswa()
 
 	c.JSON(http.StatusOK, response)
 }
@@ -91,15 +92,13 @@ func GetDataActor(c *gin.Context) {
 }
 
 func GetUsers(c *gin.Context) {
-	var response models.BaseResponseModel
-
-	response = repositories.GetAllUsers()
+	response := repositories.GetAllUsers()
 
 	c.JSON(http.StatusOK, response)
 }
 
 func GetUser(c *gin.Context) {
-	var response models.BaseResponseModel
+	// var response models.BaseResponseModel
 	validRoles := map[string]bool{"siswa": true, "admin": true, "guru": true}
 	// Ambil query parameter "role"
 	role := c.Query("role")
@@ -143,9 +142,31 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	response = repositories.GetUserByEmail(email, role)
+	response, message := repositories.GetUserByEmail(email, role)
 
-	c.JSON(http.StatusOK, response)
+	if strings.Contains(strings.ToLower(message), "error bad request") {
+		c.JSON(http.StatusBadRequest, models.BaseResponseModel{
+			Message: message,
+			Data:    nil,
+		})
+		return
+	}
+
+	if strings.Contains(strings.ToLower(message), "no data found") {
+		c.JSON(http.StatusBadRequest, models.BaseResponseModel{
+			Message: "error : no data found",
+			Data:    nil,
+		})
+		return
+	}
+
+	if strings.Contains(strings.ToLower(message), "successfully") {
+		c.JSON(http.StatusOK, models.BaseResponseModel{
+			Message: "Data retrieved successfully",
+			Data:    response,
+		})
+		return
+	}
 }
 
 func UpdateDataActor(c *gin.Context) {
@@ -251,6 +272,95 @@ func UpdateDataActor(c *gin.Context) {
 		}
 		c.JSON(http.StatusBadRequest, response)
 		return
+	}
+	c.JSON(http.StatusOK, response)
+}
+
+func GetPoint(c *gin.Context) {
+	var response models.BaseResponseModel
+
+	email, errmail := services.GetUserEmailFromToken(c)
+	if errmail != nil {
+		response = models.BaseResponseModel{
+			Message: errmail.Error(),
+			Data:    nil,
+		}
+		fmt.Println(errmail)
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	}
+
+	userPoint, message := repositories.GetUserPoint(email)
+
+	if strings.Contains(strings.ToLower(message), "success") {
+		response = models.BaseResponseModel{
+			Message: message,
+			Data:    userPoint,
+		}
+		c.JSON(http.StatusOK, response)
+		return
+	} else {
+		response = models.BaseResponseModel{
+			Message: message,
+			Data:    nil,
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+}
+
+func UpdatePoint(c *gin.Context) {
+	var response models.BaseResponseModel
+	var input points.DiamondOrExp
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		response = models.BaseResponseModel{
+			Message: err.Error(),
+			Data:    nil,
+		}
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	email, errmail := services.GetUserEmailFromToken(c)
+	if errmail != nil {
+		response = models.BaseResponseModel{
+			Message: errmail.Error(),
+			Data:    nil,
+		}
+		fmt.Println(errmail)
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	}
+
+	db := config.DB
+	// GORM akan hanya update field yang tidak nil
+	tx := db.Model(&points.UserPoint{}).
+		Where("email = ?", email).Updates(input)
+
+	// fmt.Println(err.Error())
+
+	if tx.Error != nil {
+		response = models.BaseResponseModel{
+			Message: tx.Error.Error(),
+			Data:    nil,
+		}
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+
+	if tx.RowsAffected == 0 {
+		response = models.BaseResponseModel{
+			Message: "Data tidak ditemukan",
+			Data:    nil,
+		}
+		c.JSON(http.StatusNotFound, response)
+		return
+	}
+
+	response = models.BaseResponseModel{
+		Message: "User point updated",
+		Data:    input,
 	}
 	c.JSON(http.StatusOK, response)
 }

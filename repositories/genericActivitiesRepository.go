@@ -3,6 +3,7 @@ package repositories
 import (
 	"coba1BE/config"
 	genericactivities "coba1BE/models/genericActivities"
+	"coba1BE/models/soal"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -56,8 +57,8 @@ ORDER BY
 	return genericActivities, fmt.Sprintf("Success")
 }
 
-func GetGenericModules(c *gin.Context, kelas, mapel string) ([]genericactivities.GenericModulesResponse, string) {
-	var genericActivities []genericactivities.GenericModulesResponse
+func GetGenericModulesKelas(c *gin.Context, kelas, mapel string) ([]genericactivities.GenericModulesKelasResponse, string) {
+	var genericActivities []genericactivities.GenericModulesKelasResponse
 	// var result models.BaseResponseModel
 
 	db := config.DB
@@ -68,6 +69,56 @@ WHERE kelas = ? AND id_mapel = ?
 ORDER BY module ASC;`
 
 	tmpResult := db.Raw(query, kelas, mapel).Scan(&genericActivities)
+
+	if tmpResult.Error != nil {
+		fmt.Println(tmpResult.Error)
+		return nil, fmt.Sprintf("error fetching data : %e", tmpResult.Error)
+	}
+
+	if tmpResult.RowsAffected == 0 {
+		return nil, fmt.Sprintf("no data found, maybe wrong in query")
+	}
+
+	return genericActivities, fmt.Sprintf("Success")
+}
+
+func GetGenericModules(c *gin.Context, mapel string) ([]genericactivities.GenericModulesResponse, string) {
+	var genericActivities []genericactivities.GenericModulesResponse
+	// var result models.BaseResponseModel
+
+	db := config.DB
+	query := `SELECT
+kelas, id_module, module, module_judul, module_deskripsi
+FROM modules
+WHERE id_mapel = ?
+ORDER BY kelas ASC;`
+
+	tmpResult := db.Raw(query, mapel).Scan(&genericActivities)
+
+	if tmpResult.Error != nil {
+		fmt.Println(tmpResult.Error)
+		return nil, fmt.Sprintf("error fetching data : %e", tmpResult.Error)
+	}
+
+	if tmpResult.RowsAffected == 0 {
+		return nil, fmt.Sprintf("no data found, maybe wrong in query")
+	}
+
+	return genericActivities, fmt.Sprintf("Success")
+}
+
+func GetGenericModule(c *gin.Context, mapel string) ([]soal.GenericSoalModelResponse, string) {
+	var genericActivities []soal.GenericSoalModelResponse
+	// var result models.BaseResponseModel
+
+	db := config.DB
+	query := `SELECT
+id_soal, id_module, soal, jenis, opsi_a, opsi_b, opsi_c, opsi_d, jawaban
+FROM soal
+WHERE id_module = ?
+;`
+
+	tmpResult := db.Raw(query, mapel).Scan(&genericActivities)
 
 	if tmpResult.Error != nil {
 		fmt.Println(tmpResult.Error)

@@ -47,7 +47,7 @@ func CGenericMapels(c *gin.Context) {
 	})
 }
 
-func CGenericModules(c *gin.Context) {
+func CGenericModulesClass(c *gin.Context) {
 	// var response models.BaseResponseModel
 
 	kelas := c.Param("kelas")
@@ -62,7 +62,65 @@ func CGenericModules(c *gin.Context) {
 		return
 	}
 
-	result, msg := repositories.GetGenericModules(c, kelas, mapel)
+	result, msg := repositories.GetGenericModulesKelas(c, kelas, mapel)
+
+	if strings.Contains(msg, "error fetching data") {
+		c.JSON(http.StatusBadRequest, models.BaseResponseModel{
+			Message: msg,
+			Data:    nil,
+		})
+		return
+	}
+
+	if strings.Contains(msg, "maybe wrong in query") {
+		c.JSON(http.StatusBadRequest, models.BaseResponseModel{
+			Message: msg,
+			Data:    nil,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.BaseResponseModel{
+		Message: msg,
+		Data:    result,
+	})
+}
+
+func CGenericModules(c *gin.Context) {
+	// var response models.BaseResponseModel
+
+	idMapel := c.Param("id_mapel")
+
+	result, msg := repositories.GetGenericModules(c, idMapel)
+
+	if strings.Contains(msg, "error fetching data") {
+		c.JSON(http.StatusBadRequest, models.BaseResponseModel{
+			Message: msg,
+			Data:    nil,
+		})
+		return
+	}
+
+	if strings.Contains(msg, "maybe wrong in query") {
+		c.JSON(http.StatusBadRequest, models.BaseResponseModel{
+			Message: msg,
+			Data:    nil,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.BaseResponseModel{
+		Message: msg,
+		Data:    result,
+	})
+}
+
+func CGenericModule(c *gin.Context) {
+	// var response models.BaseResponseModel
+
+	idModule := c.Param("id_module")
+
+	result, msg := repositories.GetGenericModule(c, idModule)
 
 	if strings.Contains(msg, "error fetching data") {
 		c.JSON(http.StatusBadRequest, models.BaseResponseModel{

@@ -6,8 +6,8 @@ import (
 
 type Siswa struct {
 	Email       string    `json:"email" gorm:"type:varchar(100);unique;not null"`
-	Nama        string    `json:"nama" gorm:"type:varchar(100)"`
-	Kelas       string    `json:"kelas" gorm:"type:varchar(50)"`
+	Nama        string    `json:"nama,omitempty" gorm:"type:varchar(100)"`
+	Kelas       string    `json:"kelas,omitempty" gorm:"type:varchar(50)"`
 	DateCreated time.Time `json:"date_created" gorm:"type:timestamp;default:CURRENT_TIMESTAMP"`
 }
 
@@ -50,6 +50,19 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
+	Email        string  `json:"email"`
+	Nama         string  `json:"nama"`
+	Role         string  `json:"role"`               // siswa/guru/admin
+	Kelas        *string `json:"kelas,omitempty"`    // optional
+	IdMapel      *int    `json:"id_mapel,omitempty"` // optional
+	Jabatan      *string `json:"jabatan,omitempty"`
+	Keterangan   *string `json:"keterangan,omitempty"`
+	DateCreated  string  `json:"date_created"`
+	AccessToken  string  `json:"access_token"`
+	RefreshToken string  `json:"refresh_token"`
+}
+
+type RefreshResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
 }
@@ -77,4 +90,14 @@ type Admin struct {
 // TableName memberikan nama tabel yang eksplisit
 func (Admin) TableName() string {
 	return "admin"
+}
+
+type UserVerified struct {
+	Email    string `gorm:"primaryKey;size:100;not null"`
+	Verified bool   `gorm:"default:false"`
+}
+
+// TableName memberikan nama tabel yang eksplisit
+func (UserVerified) TableName() string {
+	return "user_verified"
 }

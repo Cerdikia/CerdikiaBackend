@@ -3,6 +3,7 @@ package repositories
 import (
 	"coba1BE/config"
 	"coba1BE/models"
+	"coba1BE/models/points"
 	"coba1BE/models/users"
 	"fmt"
 )
@@ -77,31 +78,6 @@ func GetDataActor(role string) models.BaseResponseModel {
 	return result
 }
 
-// () models.BaseResponseModel {
-// 	var users []users.Siswa
-// 	var result models.BaseResponseModel
-
-// 	db := config.DB
-// 	query := `SELECT email, nama, kelas, date_created FROM siswa`
-
-// 	tmpResult := db.Raw(query).Scan(&users)
-
-// 	if tmpResult.Error != nil {
-// 		fmt.Println(tmpResult.Error)
-// 		result = models.BaseResponseModel{
-// 			Message: tmpResult.Error.Error(),
-// 			Data:    nil,
-// 		}
-// 	} else {
-// 		result = models.BaseResponseModel{
-// 			Message: "Data retrieved successfully",
-// 			Data:    users,
-// 		}
-// 	}
-
-// 	return result
-// }
-
 func GetAllUsers() models.BaseResponseModel {
 	var users []users.UserProfile
 	var result models.BaseResponseModel
@@ -132,10 +108,9 @@ SELECT email, nama, 'admin' AS role, date_created FROM admin;`
 	return result
 }
 
-func GetUserByEmail(email, role string) models.BaseResponseModel {
+func GetUserByEmail(email, role string) (*users.UserProfile, string) {
 	// var users users.Siswa
-	var users users.UserProfile
-	var result models.BaseResponseModel
+	var user users.UserProfile
 	var query string
 	fmt.Println("loginRequest role : " + role)
 
@@ -145,43 +120,28 @@ func GetUserByEmail(email, role string) models.BaseResponseModel {
 	case "siswa":
 		query = `SELECT email, nama, kelas, NULL AS jabatan, NULL AS keterangan, date_created FROM siswa WHERE email = ?`
 	case "guru":
-		query = `SELECT email, nama, NULL AS kelas, jabatan, NULL AS keterangan, date_created FROM guru WHERE email = ?`
+		query = `SELECT email, id_mapel, nama, NULL AS kelas, jabatan, NULL AS keterangan, date_created FROM guru WHERE email = ?`
 	case "admin":
 		query = `SELECT email, nama, NULL AS kelas, NULL AS jabatan, keterangan, date_created FROM admin WHERE email = ?`
 	default:
-		result = models.BaseResponseModel{
-			Message: "no data found",
-			Data:    nil,
-		}
-
-		return result
+		return nil, "error bad request"
 	}
 
-	// tmpResult := db.Raw(query, role, email).Scan(&users)
-	tmpResult := db.Raw(query, email).Scan(&users)
+	// tmpResult := db.Raw(query, role, email).Scan(&user)
+	tmpResult := db.Raw(query, email).Scan(&user)
 
 	if tmpResult.Error != nil {
 		fmt.Println(tmpResult.Error)
-		result = models.BaseResponseModel{
-			Message: tmpResult.Error.Error(),
-			Data:    nil,
-		}
+		return nil, fmt.Sprintf("error query data : %e", tmpResult.Error)
+
 	} else if tmpResult.RowsAffected == 0 {
-		result = models.BaseResponseModel{
-			Message: "no data found",
-			Data:    nil,
-		}
+		return nil, "no data found"
 	} else {
 		// Tambahkan asal
-		users.Role = role
-		// fmt.Println("email : " + users[0].Email)
-		result = models.BaseResponseModel{
-			Message: "Data retrieved successfully",
-			Data:    users,
-		}
+		user.Role = role
+		// fmt.Println("email : " + user[0].Email)
+		return &user, "Data retrieved successfully"
 	}
-
-	return result
 }
 
 func UpdateDataSiswa(actor users.Siswa) (*users.Siswa, string) {
@@ -242,4 +202,26 @@ func UpdateDataAdmin(actor users.Admin) (*users.Admin, string) {
 			return &actor, "Success"
 		}
 	}
+}
+
+func CreatePointFirst(email string) error {
+	userPoint := points.UserPoint{
+		Email: email,
+	}
+	db := config.DB
+	err := db.Create(&userPoint).Error
+	return err
+}
+
+// func UpdatPointGeneral() {
+
+// }
+
+func CreateAcountVerifiedFirst(email string) error {
+	userPoint := users.UserVerified{
+		Email: email,
+	}
+	db := config.DB
+	err := db.Create(&userPoint).Error
+	return err
 }
