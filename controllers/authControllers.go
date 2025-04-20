@@ -15,6 +15,8 @@ import (
 
 // Login handler
 func LoginControler(c *gin.Context) {
+	// var response models.BaseResponseModel
+	// var userData users.UserProfile
 	var user users.LoginRequest
 	if err := c.ShouldBindJSON(&user); err != nil {
 		// c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
@@ -26,8 +28,8 @@ func LoginControler(c *gin.Context) {
 	}
 
 	fmt.Println("email from auth controlers : " + user.Email)
-	userStatus := repositories.GetUserByEmail(user.Email, user.Role).Message
-	if userStatus != "Data retrieved successfully" {
+	userData, message := repositories.GetUserByEmail(user.Email, user.Role)
+	if message != "Data retrieved successfully" {
 		// c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		c.JSON(http.StatusUnauthorized, models.BaseResponseModel{
 			Message: "Invalid credentials",
@@ -46,18 +48,54 @@ func LoginControler(c *gin.Context) {
 		return
 	}
 
-	// c.JSON(http.StatusOK, users.LoginResponse{
-	// 	AccessToken:  accessToken,
-	// 	RefreshToken: refreshToken,
-	// })
+	// fmt.Println("email fromauth controller : " + userData.Email)
 
-	c.JSON(http.StatusOK, models.BaseResponseModel{
-		Message: "E-mail " + user.Email + " Successfuly Login",
-		Data: users.LoginResponse{
-			AccessToken:  accessToken,
-			RefreshToken: refreshToken,
-		}})
-
+	if userData.Role == "siswa" {
+		c.JSON(http.StatusOK, models.BaseResponseModel{
+			Message: "E-mail " + user.Email + " Successfuly Login",
+			Data: users.LoginResponse{
+				// MASUKIN DATA USER KE SINI !!!
+				Role:         userData.Role,
+				Email:        userData.Email,
+				Nama:         userData.Nama,
+				Kelas:        userData.Kelas,
+				DateCreated:  userData.DateCreated,
+				AccessToken:  accessToken,
+				RefreshToken: refreshToken,
+			}})
+		return
+	}
+	if userData.Role == "guru" {
+		c.JSON(http.StatusOK, models.BaseResponseModel{
+			Message: "E-mail " + user.Email + " Successfuly Login",
+			Data: users.LoginResponse{
+				// MASUKIN DATA USER KE SINI !!!
+				Role:         userData.Role,
+				Email:        userData.Email,
+				Nama:         userData.Nama,
+				Jabatan:      userData.Jabatan,
+				IdMapel:      userData.IdMapel,
+				DateCreated:  userData.DateCreated,
+				AccessToken:  accessToken,
+				RefreshToken: refreshToken,
+			}})
+		return
+	}
+	if userData.Role == "admin" {
+		c.JSON(http.StatusOK, models.BaseResponseModel{
+			Message: "E-mail " + user.Email + " Successfuly Login",
+			Data: users.LoginResponse{
+				// MASUKIN DATA USER KE SINI !!!
+				Role:         userData.Role,
+				Email:        userData.Email,
+				Nama:         userData.Nama,
+				Keterangan:   userData.Keterangan,
+				DateCreated:  userData.DateCreated,
+				AccessToken:  accessToken,
+				RefreshToken: refreshToken,
+			}})
+		return
+	}
 }
 
 // Refresh Token handler
@@ -100,35 +138,8 @@ func RefreshToken(c *gin.Context) {
 
 	c.JSON(http.StatusOK, models.BaseResponseModel{
 		Message: "E-mail " + username + " Successfuly Login",
-		Data: users.LoginResponse{
+		Data: users.RefreshResponse{
 			AccessToken:  accessToken,
 			RefreshToken: refreshToken,
 		}})
 }
-
-// func getDataToken(c *gin.Context) (string, error) {
-// 	var req users.LoginResponse
-// 	if err := c.ShouldBindJSON(&req); err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
-// 		return "", fmt.Errorf("Invalid request")
-// 	}
-
-// 	token, err := services.ValidateToken(req.RefreshToken)
-// 	if err != nil || !token.Valid {
-// 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired refresh token"})
-// 		return "", fmt.Errorf("Invalid or expired refresh token")
-// 	}
-
-// 	claims, ok := token.Claims.(jwt.MapClaims)
-// 	if !ok {
-// 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token claims"})
-// 		return "", fmt.Errorf("Invalid refresh token claims")
-// 	}
-
-// 	username, ok := claims["username"].(string)
-// 	if !ok {
-// 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid refresh token data"})
-// 		return "", fmt.Errorf("Invalid refresh token data")
-// 	}
-// 	return username, nil
-// }

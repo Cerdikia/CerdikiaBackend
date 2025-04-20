@@ -30,6 +30,8 @@ func main() {
 
 	r := gin.Default()
 
+	r.Static("/uploads", "./uploads")
+
 	// Atur middleware CORS
 	r.Use(cors.New(cors.Config{
 		// AllowOrigins:     []string{"http://localhost:3000"}, // sesuaikan origin frontend kamu
@@ -54,8 +56,10 @@ func main() {
 
 	protected := r.Group("")
 	protected.Use(middleware.AuthMiddleware())
-	protected.GET("/genericMapels/:kelas", controllers.CGenericMapels)
-	protected.GET("/genericModules/:kelas/:mapel", controllers.CGenericModules)
+	protected.GET("/genericMapels/:kelas", controllers.CGenericMapels)                    // ambil semua mata pelajaran dan jumlah modulnya melalui kelas
+	protected.GET("/genericModulesClass/:kelas/:mapel", controllers.CGenericModulesClass) // ambil semua module dengan acuan kelas dan mapel
+	protected.GET("/genericModules/:id_mapel", controllers.CGenericModules)               // ambil semua module dengan acuan  mapel
+	protected.GET("/genericModule/:id_module", controllers.CGenericModule)                // ambil soal dari sebuah module dengan acuan id_module
 
 	// ========= Actor ===============
 	protected.GET("/getAllUsers", controllers.GetUsers)
@@ -63,6 +67,23 @@ func main() {
 	protected.GET("/getDataActor/:role", controllers.GetDataActor)
 	protected.GET("/getDataUser", controllers.GetUser)
 	protected.PUT("/editDataUser/:role", controllers.UpdateDataActor)
+
+	// ========= Siawa Verified ===============
+	protected.GET("/verified", controllers.Beingverified)
+	r.GET("/verifiedes", controllers.Beingverifieds)
+	r.PATCH("/verifiedes", controllers.UpdateUserVerifiedBatch)
+
+	// ========= Soal ===============
+	r.POST("/upload-image", controllers.UploadImage)
+	r.POST("/upload-soal", controllers.UploadSoal)
+	// if strings.Contains(strings.ToLower(message), "success") {
+	r.GET("/getDataSoal/:id_soal", controllers.GetDataSoal)
+	r.PUT("/editDataSoal/:id_soal", controllers.UpdateDataSoal)
+	r.DELETE("/deleteDataSoal/:id_soal", controllers.DeleteSoal)
+
+	// ========= Point ===============
+	protected.GET("/point", controllers.GetPoint)
+	protected.PUT("/point", controllers.UpdatePoint)
 
 	// Menutup koneksi database saat aplikasi berhenti
 	sqlDB, err := db.DB()
