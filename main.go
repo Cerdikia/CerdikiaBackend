@@ -36,7 +36,7 @@ func main() {
 	r.Use(cors.New(cors.Config{
 		// AllowOrigins:     []string{"http://localhost:3000"}, // sesuaikan origin frontend kamu
 		AllowAllOrigins:  true,
-		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
@@ -56,11 +56,26 @@ func main() {
 
 	protected := r.Group("")
 	protected.Use(middleware.AuthMiddleware())
-	protected.GET("/genericMapels/:kelas", controllers.CGenericMapels)                    // ambil semua mata pelajaran dan jumlah modulnya melalui kelas
-	protected.GET("/genericModulesClass/:kelas/:mapel", controllers.CGenericModulesClass) // ambil semua module dengan acuan kelas dan mapel
-	protected.GET("/genericModules/:id_mapel", controllers.CGenericModules)               // ambil semua module dengan acuan  mapel
-	protected.GET("/genericModule/:id_module", controllers.CGenericModule)                // ambil soal dari sebuah module dengan acuan id_module
+	// BUT HANDLER POST MAPEL
+	// BUT HANDLER EDIT MAPEL
+	// BUT HANDLER DELETE MAPEL
+	protected.GET("/genericAllMapels", controllers.GetAllMapel)
+	protected.GET("/genericMapels", controllers.CGenericMapels) // Query param : ?id_kelas=, ?finished= ambil semua mata pelajaran dan jumlah modulnya melalui kelas
+	// mapel.GET("/:id", controllers.GetMapelByID)
+	protected.POST("/genericMapels", controllers.CreateMapel)
+	protected.PUT("/genericMapels/:id", controllers.UpdateMapel)
+	protected.DELETE("/genericMapels/:id", controllers.DeleteMapel)
 
+	// BUT HANDLER POST MODULE
+	// BUT HANDLER EDIT MODULE
+	// BUT HANDLER DELETE MODULE
+	protected.GET("/genericModules", controllers.CGenericModules) // ambil semua module dengan acuan  mapel
+	// r.GET("/", controllers.GetAllModules)
+	// module.GET("/:id", controllers.GetModuleByID)
+	protected.POST("/genericModules", controllers.CreateModule)
+	protected.PUT("/genericModules/:id", controllers.UpdateModule)
+	protected.DELETE("/genericModules/:id", controllers.DeleteModule)
+	protected.GET("/genericModule/:id_module", controllers.CGenericModule) // ambil soal dari sebuah module dengan acuan id_module
 	// ========= Actor ===============
 	protected.GET("/getAllUsers", controllers.GetUsers)
 	// protected.GET("/siswa", controllers.GetSiswa)
@@ -70,20 +85,57 @@ func main() {
 
 	// ========= Siawa Verified ===============
 	protected.GET("/verified", controllers.Beingverified)
-	r.GET("/verifiedes", controllers.Beingverifieds)
-	r.PATCH("/verifiedes", controllers.UpdateUserVerifiedBatch)
+	protected.GET("/verifiedes", controllers.Beingverifieds)
+	protected.PATCH("/verifiedes", controllers.UpdateUserVerifiedBatch)
 
 	// ========= Soal ===============
-	r.POST("/upload-image", controllers.UploadImage)
-	r.POST("/upload-soal", controllers.UploadSoal)
+	protected.POST("/upload-image", controllers.UploadImage)
+	protected.POST("/upload-soal", controllers.UploadSoal)
 	// if strings.Contains(strings.ToLower(message), "success") {
-	r.GET("/getDataSoal/:id_soal", controllers.GetDataSoal)
-	r.PUT("/editDataSoal/:id_soal", controllers.UpdateDataSoal)
-	r.DELETE("/deleteDataSoal/:id_soal", controllers.DeleteSoal)
+	protected.GET("/getDataSoal/:id_soal", controllers.GetDataSoal)
+	protected.PUT("/editDataSoal/:id_soal", controllers.UpdateDataSoal)
+	protected.DELETE("/deleteDataSoal/:id_soal", controllers.DeleteSoal)
 
 	// ========= Point ===============
 	protected.GET("/point", controllers.GetPoint)
 	protected.PUT("/point", controllers.UpdatePoint)
+
+	// ========= Barang ===============
+	// CRUD routes
+	protected.GET("/barang", controllers.GetAllBarang)
+	protected.GET("/barang/:id", controllers.GetBarangByID)
+	protected.POST("/barang", controllers.CreateBarang)
+	protected.PUT("/barang/:id", controllers.UpdateBarang)
+	protected.DELETE("/barang/:id", controllers.DeleteBarang)
+
+	// =================== Tukara Point ====================================
+	// Route tukar barang
+	protected.POST("/tukar-barang", controllers.TukarBarang) // USER POINT BLM DI KURANGIN!!!
+
+	// =================== logs ====================================
+	protected.GET("/logs/:email", controllers.GetLogsByEmail) // DEV MODE ONLY !!!
+	protected.GET("/gegeralLogs", controllers.GetAllLogs)     // get all logs
+	// r.GET("/:id", controllers.GetLogByID)
+	protected.POST("/logs", controllers.CreateLog)
+	// r.PUT("/:id", controllers.UpdateLog)
+	// r.DELETE("/:id", controllers.DeleteLog)
+	protected.GET("/logs", controllers.GetLogsBydEmailWithToken) // get logs where token email
+	protected.GET("/logsBy", controllers.GetLogsBy)              // GET /logs/email/john@example.com/module/2
+
+	// =================== Rekap Smester ====================================
+	protected.POST("/rekap-semester", controllers.RekapSemester)
+	protected.POST("/edit-tahun-ajaran", controllers.EditTahunAjaran)
+	// {
+	// 	"tahun_ajaran_lama": "2025/225",
+	// 	"tahun_ajaran_baru": "2025/2026"
+	// }
+
+	// =================== KLEAS CRUD ====================================
+	protected.GET("/kelas", controllers.GetAllKelas)
+	protected.GET("/kelas/:id", controllers.GetKelasByID)
+	protected.POST("/kelas", controllers.CreateKelas)
+	protected.PUT("/kelas/:id", controllers.UpdateKelas)
+	protected.DELETE("/kelas/:id", controllers.DeleteKelas)
 
 	// Menutup koneksi database saat aplikasi berhenti
 	sqlDB, err := db.DB()

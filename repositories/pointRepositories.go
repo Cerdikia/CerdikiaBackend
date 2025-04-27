@@ -22,8 +22,8 @@ import (
 // 	c.JSON(http.StatusOK, gin.H{"message": "User point updated"})
 // }
 
-func GetUserPoint(email string) (*points.UserPoint, string) {
-	var userPoint points.UserPoint
+func GetUserPoint(email string) (*points.UserPointResponse, string) {
+	var userPoint points.UserPointResponse
 
 	query := `SELECT email, diamond, exp FROM user_points WHERE email = ?`
 	db := config.DB

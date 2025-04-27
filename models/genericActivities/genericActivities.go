@@ -1,23 +1,33 @@
-package genericactivities
+package genericActivities
 
 // // Model untuk tabel mapel
-// type Mapel struct {
-// 		IDMapel int    `gorm:"column:id_mapel;primaryKey"`
-// 		Mapel   string `gorm:"column:mapel"`
-// }
+type Mapel struct {
+	IDMapel int    `gorm:"primaryKey;column:id_mapel" json:"id_mapel"`
+	Mapel   string `gorm:"type:varchar(255);not null" json:"mapel"`
+}
+
+func (Mapel) TableName() string {
+	return "mapel"
+}
 
 // // Model untuk tabel modules
-// type Module struct {
-// 		IDModule        int    `gorm:"column:id_module;primaryKey;autoIncrement"`
-// 		IDMapel         int    `gorm:"column:id_mapel"`
-// 		Kelas           string `gorm:"column:kelas;type:varchar(50)"`
-// 		Module          int    `gorm:"column:module"`
-// 		ModuleJudul     string `gorm:"column:module_judul;type:text"`
-// 		ModuleDeskripsi string `gorm:"column:module_deskripsi;type:text"`
+type Module struct {
+	IDModule        int    `gorm:"primaryKey;column:id_module" json:"id_module"`
+	IDMapel         int    `gorm:"not null" json:"id_mapel"`
+	IDKelas         int    `gorm:"not null" json:"id_kelas"`
+	Module          *int   `json:"module"` // nullable
+	ModuleJudul     string `json:"module_judul"`
+	ModuleDeskripsi string `json:"module_deskripsi"`
+	IsReady         bool   `gorm:"column:is_ready;default:false"`
 
-// 		// Relasi ke tabel Mapel
-// 		MataPelajaran Mapel `gorm:"foreignKey:IDMapel"`
-// }
+	// Optional preload relasi
+	// Mapel Mapel `gorm:"foreignKey:IDMapel;references:IDMapel" json:"-"`
+	// Kelas Kelas `gorm:"foreignKey:IDKelas;references:IDKelas" json:"-"`
+}
+
+func (Module) TableName() string {
+	return "modules"
+}
 
 // Model untuk hasil query jumlah modul per mapel
 type GenericActivitiesResponse struct {

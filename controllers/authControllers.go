@@ -58,7 +58,7 @@ func LoginControler(c *gin.Context) {
 				Role:         userData.Role,
 				Email:        userData.Email,
 				Nama:         userData.Nama,
-				Kelas:        userData.Kelas,
+				IdKelas:      userData.IdKelas,
 				DateCreated:  userData.DateCreated,
 				AccessToken:  accessToken,
 				RefreshToken: refreshToken,
