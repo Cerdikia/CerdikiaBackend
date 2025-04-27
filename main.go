@@ -82,6 +82,7 @@ func main() {
 	protected.GET("/getDataActor/:role", controllers.GetDataActor)
 	protected.GET("/getDataUser", controllers.GetUser)
 	protected.PUT("/editDataUser/:role", controllers.UpdateDataActor)
+	r.DELETE("/deleteDataUser", controllers.DeleteDataActor)
 
 	// ========= Siawa Verified ===============
 	protected.GET("/verified", controllers.Beingverified)
@@ -125,6 +126,9 @@ func main() {
 	// =================== Rekap Smester ====================================
 	protected.POST("/rekap-semester", controllers.RekapSemester)
 	protected.POST("/edit-tahun-ajaran", controllers.EditTahunAjaran)
+	protected.GET("/rekap-semester-all", controllers.GetAllDataSiswa)
+	protected.GET("/rekap-semester/:id_data", controllers.GetDataSiswa)
+	protected.DELETE("/rekap-semester/:id_data", controllers.DeleteDataSiswa)
 	// {
 	// 	"tahun_ajaran_lama": "2025/225",
 	// 	"tahun_ajaran_baru": "2025/2026"
