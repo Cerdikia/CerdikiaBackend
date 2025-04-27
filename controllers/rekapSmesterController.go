@@ -63,6 +63,11 @@ func RekapSemester(c *gin.Context) {
 
 	// Optional: hapus data logs setelah dipindah
 	// db.Exec("DELETE FROM logs")
+	// Hapus data logs setelah rekap berhasil
+	if err := db.Exec("DELETE FROM logs").Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus data logs"})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Data siswa berhasil direkap untuk tahun ajaran " + tahunAjaran})
 }
@@ -94,5 +99,73 @@ func EditTahunAjaran(c *gin.Context) {
 		"message":           "Tahun ajaran berhasil diperbarui",
 		"rows_affected":     result.RowsAffected,
 		"tahun_ajaran_baru": input.TahunAjaranBaru,
+	})
+}
+
+func GetDataSiswa(c *gin.Context) {
+	db := config.DB
+	idData := c.Param("id_data") // ID data siswa yang ingin dibaca
+
+	if idData == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id_data diperlukan"})
+		return
+	}
+
+	var dataSiswa struct {
+		Email       string `json:"email"`
+		IDKelas     int    `json:"id_kelas"`
+		Progres     string `json:"progres"`
+		TahunAjaran string `json:"tahun_ajaran"`
+	}
+
+	if err := db.Table("data_siswa").Where("id_data = ?", idData).First(&dataSiswa).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Data siswa tidak ditemukan"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"email":        dataSiswa.Email,
+		"id_kelas":     dataSiswa.IDKelas,
+		"progres":      dataSiswa.Progres,
+		"tahun_ajaran": dataSiswa.TahunAjaran,
+	})
+}
+
+func GetAllDataSiswa(c *gin.Context) {
+	db := config.DB
+
+	var dataSiswa []struct {
+		IDData      int    `json:"id_data"`
+		Email       string `json:"email"`
+		IDKelas     int    `json:"id_kelas"`
+		Progres     string `json:"progres"`
+		TahunAjaran string `json:"tahun_ajaran"`
+	}
+
+	if err := db.Table("data_siswa").Find(&dataSiswa).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil data siswa"})
+		return
+	}
+
+	c.JSON(http.StatusOK, dataSiswa)
+}
+
+func DeleteDataSiswa(c *gin.Context) {
+	db := config.DB
+	idData := c.Param("id_data") // ID data siswa yang ingin dihapus
+
+	if idData == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "id_data diperlukan"})
+		return
+	}
+
+	// Hapus data siswa berdasarkan id_data
+	if err := db.Table("data_siswa").Where("id_data = ?", idData).Delete(nil).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus data siswa"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Data siswa berhasil dihapus",
 	})
 }

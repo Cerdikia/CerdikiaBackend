@@ -280,6 +280,48 @@ func UpdateDataActor(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+func DeleteDataActor(c *gin.Context) {
+	var user users.LoginRequest
+	db := config.DB
+
+	if err := c.ShouldBindJSON(&user); err != nil {
+		// c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		c.JSON(http.StatusBadRequest, models.BaseResponseModel{
+			Message: "Invalid request",
+			Data:    nil,
+		})
+		return
+	}
+
+	var query string
+	switch user.Role {
+	case "siswa":
+		query = "DELETE FROM siswa WHERE email = ?"
+	case "admin":
+		query = "DELETE FROM admin WHERE email = ?"
+	case "guru":
+		query = "DELETE FROM guru WHERE email = ?"
+	default:
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid role parameter",
+		})
+		return
+	}
+
+	// Eksekusi raw query
+	if err := db.Exec(query, user.Email).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "failed to delete " + user.Email,
+		})
+		return
+	}
+
+	// Jika sukses
+	c.JSON(http.StatusOK, gin.H{
+		"message": user.Role + " data successfully deleted",
+	})
+}
+
 func GetPoint(c *gin.Context) {
 	var response models.BaseResponseModel
 
