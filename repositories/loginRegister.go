@@ -13,7 +13,7 @@ func GetAllSiswa() models.BaseResponseModel {
 	var result models.BaseResponseModel
 
 	db := config.DB
-	query := `SELECT email, nama, kelas, date_created FROM siswa`
+	query := `SELECT email, nama, id_kelas, date_created FROM siswa`
 
 	tmpResult := db.Raw(query).Scan(&users)
 
@@ -42,7 +42,7 @@ func GetDataActor(role string) models.BaseResponseModel {
 
 	switch role {
 	case "siswa":
-		query = `SELECT email, nama, kelas, date_created FROM siswa`
+		query = `SELECT email, nama, id_kelas, date_created FROM siswa`
 	case "guru":
 		query = `SELECT email, nama, id_mapel, date_created FROM guru`
 	case "admin":
@@ -118,11 +118,11 @@ func GetUserByEmail(email, role string) (*users.UserProfile, string) {
 	// query := `SELECT email, nama, kelas, date_created FROM siswa WHERE email = ?`
 	switch role {
 	case "siswa":
-		query = `SELECT email, nama, kelas, NULL AS jabatan, NULL AS keterangan, date_created FROM siswa WHERE email = ?`
+		query = `SELECT email, nama, id_kelas, NULL AS jabatan, NULL AS keterangan, date_created FROM siswa WHERE email = ?`
 	case "guru":
-		query = `SELECT email, id_mapel, nama, NULL AS kelas, jabatan, NULL AS keterangan, date_created FROM guru WHERE email = ?`
+		query = `SELECT email, id_mapel, nama, NULL AS id_kelas, jabatan, NULL AS keterangan, date_created FROM guru WHERE email = ?`
 	case "admin":
-		query = `SELECT email, nama, NULL AS kelas, NULL AS jabatan, keterangan, date_created FROM admin WHERE email = ?`
+		query = `SELECT email, nama, NULL AS id_kelas, NULL AS jabatan, keterangan, date_created FROM admin WHERE email = ?`
 	default:
 		return nil, "error bad request"
 	}
@@ -148,9 +148,9 @@ func UpdateDataSiswa(actor users.Siswa) (*users.Siswa, string) {
 	var query string
 	// var result users.UserProfile
 	db := config.DB
-	query = "UPDATE siswa SET nama = ? , kelas = ? WHERE email = ?"
+	query = "UPDATE siswa SET nama = ? , id_kelas = ? WHERE email = ?"
 
-	tempResult := db.Exec(query, actor.Nama, actor.Kelas, actor.Email)
+	tempResult := db.Exec(query, actor.Nama, actor.IdKelas, actor.Email)
 
 	if tempResult.Error != nil {
 		return nil, fmt.Sprintf("error query : %e", tempResult.Error)
@@ -218,10 +218,10 @@ func CreatePointFirst(email string) error {
 // }
 
 func CreateAcountVerifiedFirst(email string) error {
-	userPoint := users.UserVerified{
+	userVerivied := users.UserVerified{
 		Email: email,
 	}
 	db := config.DB
-	err := db.Create(&userPoint).Error
+	err := db.Create(&userVerivied).Error
 	return err
 }

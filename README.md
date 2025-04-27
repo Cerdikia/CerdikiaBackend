@@ -66,8 +66,8 @@ Body (JSON):
 ```bash
 {
   "email": "user123@gmail.com",
-  "nama": "myname",
-  "kelas": "3"
+  "nama": "myname",  // optional
+  "kelas": "3"       // optional
 }
 ```
 
@@ -80,7 +80,7 @@ Body (JSON):
   "email": "user123@gmail.com",
   "id_mapel": 4,
   "nama": "User Name",
-  "jabatan": "guru matematika"
+  "jabatan": "guru matematika" // optional
 }
 ```
 
@@ -92,7 +92,7 @@ Body (JSON):
 {
   "email": "user123@gmail.com",
   "nama": "User Name",
-  "keterangan": "admin baru"
+  "keterangan": "admin baru" // optional
 }
 ```
 
@@ -127,6 +127,10 @@ Response :
   "Message": "E-mail user123@gmail.com Successfuly Login",
   "Data":
   {
+    "email": "user123@gmail.com",
+    "nama": "user123",
+    "role": "siswa",
+    "date_created": "2025-04-24T15:29:29+07:00",
     "access_token": "...",
     "refresh_token": "..."
   }
@@ -163,10 +167,67 @@ Response :
 
 # 🔒 Protected Routes (Require Authentication)
 
-📚 Get Generic Mapels by Kelas
+💯 Get User Point
 
 Endpoint:
-`GET /genericMapels/:kelas`
+`GET /point`
+
+Description :
+Retrieve user point.
+
+Example :
+`localhost:81/point`
+Response :
+
+```bash
+{
+  "Message": "Data retrieved successfully",
+  "Data":
+  {
+    "email": "user123@gmail.com",
+    "diamond": 0,
+    "exp": 0
+  }
+}
+```
+
+💯 Get User Point
+
+Endpoint:
+`PUT /point`
+
+Description :
+set user point, you can jus set 1 value instead of both.
+
+Example :
+`localhost:81/point`
+
+Request Body :
+
+```bash
+{
+  "diamond" : 0, // optional
+  "exp": 0       // optional
+}
+```
+
+Response :
+
+```bash
+{
+  "Message": "User point updated",
+  "Data":
+  {
+    "diamond": 0,
+    "exp": 0
+  }
+}
+```
+
+📚 Get Generic Mapels by id_kelas
+
+Endpoint:
+`GET /genericMapels/:id_kelas`
 
 Description :
 Retrieve list of mapels (subjects) based on class.
@@ -195,15 +256,16 @@ Response :
 }
 ```
 
-📘 Get Generic Modules
+📘 Get Generic Modules For 1 Class
+
 Endpoint:
-`GET /genericModules/:kelas/:id_mapel`
+`GET /genericModulesClass/:id_kelas/:id_mapel`
 
 Description:
 Get list of modules based on class and subject.
 
 Example :
-`localhost:81/genericModules/3/3`
+`localhost:81/genericModulesClass/3/3`
 Response :
 
 ```bash
@@ -222,6 +284,82 @@ Response :
       "module_judul": "Menulis Narasi Sederhana",
       "module_deskripsi": "Penyusunan cerita pendek dengan struktur awal-tengah-akhir"
     }
+  ]
+}
+```
+
+📘 Get Generic Modules For All Class
+
+Endpoint:
+`GET /genericModules/:id_mapel`
+
+Description:
+Get list of All modules based on subject.
+
+Example :
+`http://localhost:81/genericModules/3`
+Response :
+
+```bash
+{
+  "Message": "Success",
+  "Data": [
+    {
+      "kelas": "1",
+      "id_module": 4,
+      "module": 1,
+      "module_judul": "Mengenal Huruf dan Suku Kata",
+      "module_deskripsi": "Pengenalan huruf vokal dan konsonan serta pembentukan suku kata dasar"
+    },
+    {
+      "kelas": "1",
+      "id_module": 5,
+      "module": 2,
+      "module_judul": "Membaca Kata Sederhana",
+      "module_deskripsi": "Belajar membaca kata-kata pendek dengan suku kata terbuka"
+    }
+  ]
+}
+```
+
+📘 Get Generic Specific Modules
+
+Endpoint:
+`GET /genericModule/:id_mapel`
+
+Description:
+Get spesific module which contains data on questions for 1 module.
+
+Example :
+`localhost:81/genericModule/4`
+Response :
+
+```bash
+{
+  "Message": "Success",
+  "Data": [
+        {
+      "id_soal": 22,
+      "id_module": 4,
+      "soal": "<p><img src=\"http://localhost:81/uploads/67fbd55b-9ca1-419d-b9e1-c6ba7e718808.png\"></p><p>dasdasd</p>",
+      "jenis": "pilihan_ganda",
+      "opsi_a": "<p>dasasdasd</p>",
+      "opsi_b": "<p>asdasdas</p>",
+      "opsi_c": "<p>asdasd</p>",
+      "opsi_d": "<p>asdasd</p>",
+      "jawaban": "b"
+    },
+    {
+      "id_soal": 24,
+      "id_module": 4,
+      "soal": "<p><img src=\"http://localhost:81/uploads/ad82c46d-0604-40ea-ae5b-b2ac0ccc5dc1.png\"></p>",
+      "jenis": "pilihan_ganda",
+      "opsi_a": "<p>asdfasdf</p>",
+      "opsi_b": "<p>gdfgsdf</p>",
+      "opsi_c": "<p>gdfgs</p>",
+      "opsi_d": "<p>dfgsdfgsdfg</p>",
+      "jawaban": "c"
+    },
   ]
 }
 ```
@@ -282,13 +420,13 @@ Response
 
 👥 Get Current User Data
 Endpoint:
-GET /getDataUser
+GET /getDataUser?role
 
 Description:
 Get the currently authenticated user's data.
 
 Example :
-`http://localhost:81/getDataUser`
+`http://localhost:81/getDataUser?role=siswa`
 Response:
 
 ```bash
@@ -326,7 +464,7 @@ Body (JSON):
 {
   "email": "user123@gmail.com",
   "nama": "myname",
-  "kelas": "3"
+  "kelas": 3
 }
 ```
 
@@ -364,7 +502,7 @@ Response :
   {
     "email": "user123@gmail.com",
     "nama": "user123",
-    "kelas": "3",
+    "id_kelas": 3,
     "date_created": "0001-01-01T00:00:00Z"
   }
 }

@@ -9,41 +9,31 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetGenericActivities(c *gin.Context, kelas string) ([]genericactivities.GenericActivitiesResponse, string) {
+func GetGenericActivities(c *gin.Context, kelas string, isReady bool) ([]genericactivities.GenericActivitiesResponse, string) {
 	var genericActivities []genericactivities.GenericActivitiesResponse
 	// var result models.BaseResponseModel
 
 	db := config.DB
-	// 	query := `SELECT
-	//     m.id_mapel,
-	//     mp.mapel AS nama_mapel,
-	//     COUNT(*) AS jumlah_modul
-	// FROM
-	//     modules m
-	// JOIN
-	//     mapel mp ON m.id_mapel = mp.id_mapel
-	// GROUP BY
-	//     m.id_mapel, mp.mapel
-	// ORDER BY
-	//     m.id_mapel;`
 
 	query := `SELECT 
     m.id_mapel,
     mp.mapel AS nama_mapel,
-    m.kelas,
+    kelas.kelas,
     COUNT(*) AS jumlah_modul
 FROM 
     modules m
 JOIN 
     mapel mp ON m.id_mapel = mp.id_mapel
+JOIN 
+  kelas ON m.id_kelas = kelas.id_kelas
 WHERE 
-    m.kelas = ?
+    m.id_kelas = ? AND is_ready = ?
 GROUP BY 
-    m.id_mapel, mp.mapel, m.kelas
+    m.id_mapel, mp.mapel, m.id_kelas
 ORDER BY 
     m.id_mapel;`
 
-	tmpResult := db.Raw(query, kelas).Scan(&genericActivities)
+	tmpResult := db.Raw(query, kelas, isReady).Scan(&genericActivities)
 
 	if tmpResult.Error != nil {
 		fmt.Println(tmpResult.Error)
@@ -57,7 +47,7 @@ ORDER BY
 	return genericActivities, fmt.Sprintf("Success")
 }
 
-func GetGenericModulesKelas(c *gin.Context, kelas, mapel string) ([]genericactivities.GenericModulesKelasResponse, string) {
+func GetGenericModulesKelas(c *gin.Context, kelas, mapel string, isFinished bool) ([]genericactivities.GenericModulesKelasResponse, string) {
 	var genericActivities []genericactivities.GenericModulesKelasResponse
 	// var result models.BaseResponseModel
 
@@ -65,10 +55,10 @@ func GetGenericModulesKelas(c *gin.Context, kelas, mapel string) ([]genericactiv
 	query := `SELECT
 id_module, module, module_judul, module_deskripsi
 FROM modules
-WHERE kelas = ? AND id_mapel = ?
+WHERE id_kelas = ? AND id_mapel = ? AND is_ready = ?
 ORDER BY module ASC;`
 
-	tmpResult := db.Raw(query, kelas, mapel).Scan(&genericActivities)
+	tmpResult := db.Raw(query, kelas, mapel, isFinished).Scan(&genericActivities)
 
 	if tmpResult.Error != nil {
 		fmt.Println(tmpResult.Error)
@@ -82,18 +72,20 @@ ORDER BY module ASC;`
 	return genericActivities, fmt.Sprintf("Success")
 }
 
-func GetGenericModules(c *gin.Context, mapel string) ([]genericactivities.GenericModulesResponse, string) {
+func GetGenericModules(c *gin.Context, mapel string, finished bool) ([]genericactivities.GenericModulesResponse, string) {
 	var genericActivities []genericactivities.GenericModulesResponse
 	// var result models.BaseResponseModel
 
 	db := config.DB
 	query := `SELECT
-kelas, id_module, module, module_judul, module_deskripsi
+kelas.kelas, id_module, module, module_judul, module_deskripsi
 FROM modules
-WHERE id_mapel = ?
+JOIN
+	kelas ON modules.id_kelas = kelas.id_kelas
+WHERE id_mapel = ? AND is_ready = ?
 ORDER BY kelas ASC;`
 
-	tmpResult := db.Raw(query, mapel).Scan(&genericActivities)
+	tmpResult := db.Raw(query, mapel, finished).Scan(&genericActivities)
 
 	if tmpResult.Error != nil {
 		fmt.Println(tmpResult.Error)
@@ -103,7 +95,32 @@ ORDER BY kelas ASC;`
 	if tmpResult.RowsAffected == 0 {
 		return nil, fmt.Sprintf("no data found, maybe wrong in query")
 	}
+	return genericActivities, fmt.Sprintf("Success")
+}
 
+func GetGenericModulesByKelas(c *gin.Context, idKelas string, finished bool) ([]genericactivities.GenericModulesResponse, string) {
+	var genericActivities []genericactivities.GenericModulesResponse
+	// var result models.BaseResponseModel
+
+	db := config.DB
+	query := `SELECT
+kelas.kelas, id_module, module, module_judul, module_deskripsi
+FROM modules
+JOIN
+	kelas ON modules.id_kelas = kelas.id_kelas
+WHERE modules.id_kelas = ? AND is_ready = ?
+ORDER BY kelas ASC;`
+
+	tmpResult := db.Raw(query, idKelas, finished).Scan(&genericActivities)
+
+	if tmpResult.Error != nil {
+		fmt.Println(tmpResult.Error)
+		return nil, fmt.Sprintf("error fetching data : %e", tmpResult.Error)
+	}
+
+	if tmpResult.RowsAffected == 0 {
+		return nil, fmt.Sprintf("no data found, maybe wrong in query")
+	}
 	return genericActivities, fmt.Sprintf("Success")
 }
 

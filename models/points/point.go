@@ -9,6 +9,12 @@ type UserPoint struct {
 	// Siswa Siswa `gorm:"foreignKey:Email;references:Email;constraint:OnDelete:CASCADE"`
 }
 
+type UserPointResponse struct {
+	Email   string `json:"email" gorm:"type:varchar(255);primaryKey"`
+	Diamond int    `json:"diamond" gorm:"default:0"`
+	Exp     int    `json:"exp" gorm:"not null;default:0"`
+}
+
 type DiamondOrExp struct {
 	Diamond *int `json:"diamond,omitempty"`
 	Exp     *int `json:"exp,omitempty"`

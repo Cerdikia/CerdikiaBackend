@@ -7,7 +7,7 @@ import (
 type Siswa struct {
 	Email       string    `json:"email" gorm:"type:varchar(100);unique;not null"`
 	Nama        string    `json:"nama,omitempty" gorm:"type:varchar(100)"`
-	Kelas       string    `json:"kelas,omitempty" gorm:"type:varchar(50)"`
+	IdKelas     *int      `json:"id_kelas,omitempty" gorm:"type:int"`
 	DateCreated time.Time `json:"date_created" gorm:"type:timestamp;default:CURRENT_TIMESTAMP"`
 }
 
@@ -20,7 +20,7 @@ type UserProfile struct {
 	Email       string  `json:"email"`
 	Nama        string  `json:"nama"`
 	Role        string  `json:"role"`               // siswa/guru/admin
-	Kelas       *string `json:"kelas,omitempty"`    // optional
+	IdKelas     *int    `json:"id_kelas,omitempty"` // optional
 	IdMapel     *int    `json:"id_mapel,omitempty"` // optional
 	Jabatan     *string `json:"jabatan,omitempty"`
 	Keterangan  *string `json:"keterangan,omitempty"`
@@ -31,7 +31,7 @@ type UserProfileReq struct {
 	Email       string  `json:"email"`
 	Nama        string  `json:"nama"`
 	Role        string  `json:"role"`               // siswa/guru/admin
-	Kelas       *string `json:"kelas,omitempty"`    // optional
+	IdKelas     *int    `json:"id_kelas,omitempty"` // optional
 	IdMapel     *int    `json:"id_mapel,omitempty"` // optional
 	Jabatan     *string `json:"jabatan,omitempty"`
 	Keterangan  *string `json:"keterangan,omitempty"`
@@ -53,7 +53,7 @@ type LoginResponse struct {
 	Email        string  `json:"email"`
 	Nama         string  `json:"nama"`
 	Role         string  `json:"role"`               // siswa/guru/admin
-	Kelas        *string `json:"kelas,omitempty"`    // optional
+	IdKelas      *int    `json:"id_kelas,omitempty"` // optional
 	IdMapel      *int    `json:"id_mapel,omitempty"` // optional
 	Jabatan      *string `json:"jabatan,omitempty"`
 	Keterangan   *string `json:"keterangan,omitempty"`

@@ -2,6 +2,8 @@ package controllers
 
 import (
 	"coba1BE/config"
+	"strconv"
+
 	// "coba1BE/controllers"
 	"coba1BE/models"
 	"coba1BE/models/points"
@@ -26,13 +28,15 @@ func CreateUser(c *gin.Context) {
 		var siswa users.Siswa
 		if err = c.ShouldBindJSON(&siswa); err == nil {
 			err = db.Create(&siswa).Error
-			errPoint := repositories.CreatePointFirst(siswa.Email)
-			errVerivied := repositories.CreateAcountVerifiedFirst(siswa.Email)
-			if err == nil || errPoint == nil || errVerivied == nil {
-				c.JSON(201, gin.H{
-					"message": "User dengan email " + siswa.Email + " berhasil dibuat",
-				})
-				return
+			if err == nil {
+				errPoint := repositories.CreatePointFirst(siswa.Email)
+				errVerivied := repositories.CreateAcountVerifiedFirst(siswa.Email)
+				if errPoint == nil || errVerivied == nil {
+					c.JSON(201, gin.H{
+						"message": "User dengan email " + siswa.Email + " berhasil dibuat",
+					})
+					return
+				}
 			}
 		}
 	case "guru":
@@ -291,6 +295,9 @@ func GetPoint(c *gin.Context) {
 	}
 
 	userPoint, message := repositories.GetUserPoint(email)
+
+	fmt.Println("user diamond : " + strconv.Itoa(userPoint.Diamond))
+	fmt.Println("user exp : " + strconv.Itoa(userPoint.Exp))
 
 	if strings.Contains(strings.ToLower(message), "success") {
 		response = models.BaseResponseModel{
