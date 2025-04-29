@@ -101,6 +101,15 @@ func main() {
 	protected.GET("/point", controllers.GetPoint)
 	protected.PUT("/point", controllers.UpdatePoint)
 
+	// ========= Ranking ===============
+	// get all ranking
+	// protected.GET("/ranking", controllers.GetRanking)
+	// get ranking kelas
+	protected.GET("/ranking", controllers.GetRankingByKelas)
+
+	// mbil status module udah di kerjain atau belum
+	// r.GET("/modules", controllers.GetModulesWithCompletion)
+
 	// ========= Barang ===============
 	// CRUD routes
 	protected.GET("/barang", controllers.GetAllBarang)

@@ -62,9 +62,11 @@ func CGenericMapels(c *gin.Context) {
 
 func CGenericModules(c *gin.Context) {
 	// var response models.BaseResponseModel
+	email := c.Query("email")
 	idMapel := c.Query("id_mapel")
 	idKelas := c.Query("id_kelas")
-	strFinished := c.DefaultQuery("finished", "0")
+	strFinished := c.DefaultQuery("finished", "1")
+
 	finished, err := strconv.ParseBool(strFinished)
 
 	if err != nil {
@@ -77,7 +79,22 @@ func CGenericModules(c *gin.Context) {
 		return
 	}
 
-	if idKelas != "" && idMapel != "" {
+	if email != "" && idKelas != "" && idMapel != "" {
+		result, msg := repositories.SpesifiedModulesKelas(c, email, idKelas, idMapel, finished)
+		if strings.Contains(msg, "Success") {
+			c.JSON(http.StatusOK, models.BaseResponseModel{
+				Message: msg,
+				Data:    result,
+			})
+			return
+		} else {
+			c.JSON(http.StatusBadRequest, models.BaseResponseModel{
+				Message: msg,
+				Data:    nil,
+			})
+			return
+		}
+	} else if idKelas != "" && idMapel != "" {
 		result, msg := repositories.GetGenericModulesKelas(c, idKelas, idMapel, finished)
 		if strings.Contains(msg, "Success") {
 			c.JSON(http.StatusOK, models.BaseResponseModel{

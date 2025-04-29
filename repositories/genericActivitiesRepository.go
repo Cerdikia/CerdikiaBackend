@@ -47,6 +47,42 @@ ORDER BY
 	return genericActivities, fmt.Sprintf("Success")
 }
 
+func SpesifiedModulesKelas(c *gin.Context, email, kelas, mapel string, isFinished bool) ([]genericactivities.SpesifiedModulesKelasResponse, string) {
+	var genericActivities []genericactivities.SpesifiedModulesKelasResponse
+	// var result models.BaseResponseModel
+	db := config.DB
+	query := `
+			SELECT 
+    m.id_module,
+    m.module,
+    m.module_judul,
+    m.module_deskripsi,
+    m.is_ready,
+    CASE 
+        WHEN COUNT(l.id_logs) > 0 THEN TRUE
+        ELSE FALSE
+    END AS is_completed
+FROM modules m
+LEFT JOIN logs l 
+    ON m.id_module = l.id_module 
+    AND l.email = ?
+WHERE m.id_kelas = ? AND m.id_mapel = ? AND is_ready = ? 
+GROUP BY m.id_module`
+
+	tmpResult := db.Raw(query, email, kelas, mapel, isFinished).Scan(&genericActivities)
+
+	if tmpResult.Error != nil {
+		fmt.Println(tmpResult.Error)
+		return nil, fmt.Sprintf("error fetching data : %e", tmpResult.Error)
+	}
+
+	if tmpResult.RowsAffected == 0 {
+		return nil, fmt.Sprintf("no data found, maybe wrong in query")
+	}
+
+	return genericActivities, fmt.Sprintf("Success")
+}
+
 func GetGenericModulesKelas(c *gin.Context, kelas, mapel string, isFinished bool) ([]genericactivities.GenericModulesKelasResponse, string) {
 	var genericActivities []genericactivities.GenericModulesKelasResponse
 	// var result models.BaseResponseModel
