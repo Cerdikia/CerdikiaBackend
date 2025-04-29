@@ -43,6 +43,16 @@ type GenericModulesKelasResponse struct {
 	Module          int    `json:"module" gorm:"column:module"`
 	ModuleJudul     string `json:"module_judul" gorm:"column:module_judul"`
 	ModuleDeskripsi string `json:"module_deskripsi" gorm:"column:module_deskripsi"`
+	IsCompleted     bool   `json:"is_completed" gorm:"column:is_completed"`
+}
+
+type SpesifiedModulesKelasResponse struct {
+	// id_module, module, module_judul, module_deskripsi
+	IDModule        int    `json:"id_module" gorm:"column:id_module"`
+	Module          int    `json:"module" gorm:"column:module"`
+	ModuleJudul     string `json:"module_judul" gorm:"column:module_judul"`
+	ModuleDeskripsi string `json:"module_deskripsi" gorm:"column:module_deskripsi"`
+	IsCompleted     bool   `json:"is_completed" gorm:"column:is_completed"`
 }
 
 type GenericModulesResponse struct {
