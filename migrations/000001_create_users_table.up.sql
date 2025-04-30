@@ -64,15 +64,20 @@ CREATE TABLE IF NOT EXISTS mapel (
 
 -- Tabel guru
 CREATE TABLE IF NOT EXISTS guru (
+  id int NOT NULL AUTO_INCREMENT,
   email VARCHAR(100) NOT NULL,
-  id_mapel INT NOT NULL,
   nama VARCHAR(100) NOT NULL,
   jabatan VARCHAR(100) DEFAULT NULL,
   date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (email),
-  UNIQUE KEY uniq_guru_email (email),
-  KEY fk_guru_mapel (id_mapel),
-  CONSTRAINT fk_guru_mapel FOREIGN KEY (id_mapel) REFERENCES mapel (id_mapel) ON DELETE CASCADE
+  PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS guru_mapel (
+  id_guru INT NOT NULL,
+  id_mapel INT NOT NULL,
+  PRIMARY KEY (id_guru, id_mapel),
+  FOREIGN KEY (id_guru) REFERENCES guru(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (id_mapel) REFERENCES mapel(id_mapel) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Tabel modules
@@ -161,4 +166,24 @@ CREATE TABLE IF NOT EXISTS data_siswa (
 -- Tambahkan akun admin default
 INSERT INTO admin (email, nama, keterangan)
 VALUES ('admin@admin.com', 'admin', 'default admin')
-ON DUPLICATE KEY UPDATE nama = VALUES(nama), keterangan = VALUES(keterangan);
+ON DUPLICATE KEY UPDATE 
+  nama = VALUES(nama), 
+  keterangan = VALUES(keterangan);
+
+INSERT INTO mapel (id_mapel, mapel)
+VALUES (1, 'Bahasa Indonesia');
+
+INSERT INTO mapel (id_mapel, mapel)
+VALUES (2, 'Matematika');
+
+INSERT INTO mapel (id_mapel, mapel)
+VALUES (3, 'Bahasa Inggris');
+
+-- Insert guru (sekali saja)
+INSERT INTO guru (email, nama, jabatan)
+VALUES ('guru1@guru.com', 'guru1', 'walikelas 1'), ('guru2@guru.com', 'guru2', 'guru bahasa inggris')
+ON DUPLICATE KEY UPDATE nama = VALUES(nama), jabatan = VALUES(jabatan);
+
+-- Tambahkan relasi ke 2 mapel
+INSERT INTO guru_mapel (id_guru, id_mapel) VALUES (1, 1), (1, 2), (2, 3)
+ON DUPLICATE KEY UPDATE id_mapel = id_mapel;

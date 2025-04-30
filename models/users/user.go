@@ -17,6 +17,7 @@ func (Siswa) TableName() string {
 }
 
 type UserProfile struct {
+	ID          *int    `json:"id,omitempty"` // optional
 	Email       string  `json:"email"`
 	Nama        string  `json:"nama"`
 	Role        string  `json:"role"`               // siswa/guru/admin
@@ -68,8 +69,8 @@ type RefreshResponse struct {
 }
 
 type Guru struct {
-	Email       string    `gorm:"primaryKey;unique;size:100" json:"email"`
-	IDMapel     int       `gorm:"not null" json:"id_mapel"`
+	ID          uint      `gorm:"primaryKey" json:"id"`
+	Email       string    `gorm:"type:varchar(100);unique;not null" json:"email"`
 	Nama        string    `gorm:"size:100;not null" json:"nama"`
 	Jabatan     *string   `gorm:"size:100" json:"jabatan,omitempty"` // nullable
 	DateCreated time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"date_created"`
@@ -78,6 +79,35 @@ type Guru struct {
 // TableName memberikan nama tabel yang eksplisit
 func (Guru) TableName() string {
 	return "guru"
+}
+
+// ==========================================
+
+type Mapel struct {
+	IDMapel int    `json:"id_mapel"`
+	Mapel   string `json:"mapel"`
+}
+
+type GuruMapelResponse struct {
+	Email   string  `json:"email"`
+	Nama    string  `json:"nama"`
+	Jabatan string  `json:"jabatan"`
+	Mapel   []Mapel `json:"mapel" gorm:"-"` // <== HARUS ada ini
+}
+
+// ============================================
+type GuruMapel struct {
+	IDGuru  uint `gorm:"column:id_guru;primaryKey"`
+	IDMapel uint `gorm:"column:id_mapel;primaryKey"`
+}
+
+func (GuruMapel) TableName() string {
+	return "guru_mapel"
+}
+
+type GuruMapelRequest struct {
+	IDGuru   uint   `json:"id_guru" binding:"required"`
+	IDMapels []uint `json:"id_mapels" binding:"required"`
 }
 
 type Admin struct {
