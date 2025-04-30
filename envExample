@@ -1,2 +1,12 @@
 PORT=your_app_port
 DATABASE_URL=username:password@tcp(127.0.0.1:3306)/database_name?charset=utf8mb4&parseTime=True&loc=Local
+
+MYSQL_ROOT_PASSWORD=password
+MYSQL_DATABASE=database
+MYSQL_USER=username
+MYSQL_PASSWORD=password
+MYSQL_PORTS="1234:1234"
+
+DB_PORT=1234
+
+MYSQL_URI=host://username:password@tcp(host:port)/database
