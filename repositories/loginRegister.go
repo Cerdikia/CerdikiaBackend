@@ -44,7 +44,7 @@ func GetDataActor(role string) models.BaseResponseModel {
 	case "siswa":
 		query = `SELECT email, nama, id_kelas, date_created FROM siswa`
 	case "guru":
-		query = `SELECT email, nama, id_mapel, date_created FROM guru`
+		query = `SELECT id, email, nama, jabatan, date_created FROM guru`
 	case "admin":
 		query = `SELECT email, nama, keterangan, date_created FROM admin`
 	default:
@@ -168,9 +168,9 @@ func UpdateDataGuru(actor users.Guru) (*users.Guru, string) {
 	var query string
 	// var result users.UserProfile
 	db := config.DB
-	query = "UPDATE guru SET id_mapel = ?, nama = ?, jabatan = ? WHERE email = ?"
+	query = "UPDATE guru SET nama = ?, jabatan = ? WHERE email = ?"
 
-	tempResult := db.Exec(query, actor.IDMapel, actor.Nama, actor.Jabatan, actor.Email)
+	tempResult := db.Exec(query, actor.Nama, actor.Jabatan, actor.Email)
 
 	if tempResult.Error != nil {
 		return nil, fmt.Sprintf("error query : %e", tempResult.Error)

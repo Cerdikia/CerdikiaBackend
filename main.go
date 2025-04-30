@@ -76,13 +76,18 @@ func main() {
 	protected.PUT("/genericModules/:id", controllers.UpdateModule)
 	protected.DELETE("/genericModules/:id", controllers.DeleteModule)
 	protected.GET("/genericModule/:id_module", controllers.CGenericModule) // ambil soal dari sebuah module dengan acuan id_module
+
+	// ========= Guru - Mapel Relasi ===============
+	protected.GET("/guru/:id_guru", controllers.GetMapelByGuru)
+	protected.POST("/guru_mapel", controllers.AddGuruMapel)
+
 	// ========= Actor ===============
 	protected.GET("/getAllUsers", controllers.GetUsers)
 	// protected.GET("/siswa", controllers.GetSiswa)
 	protected.GET("/getDataActor/:role", controllers.GetDataActor)
 	protected.GET("/getDataUser", controllers.GetUser)
 	protected.PUT("/editDataUser/:role", controllers.UpdateDataActor)
-	r.DELETE("/deleteDataUser", controllers.DeleteDataActor)
+	protected.DELETE("/deleteDataUser", controllers.DeleteDataActor)
 
 	// ========= Siawa Verified ===============
 	protected.GET("/verified", controllers.Beingverified)
