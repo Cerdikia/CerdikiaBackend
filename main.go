@@ -60,8 +60,8 @@ func main() {
 	// BUT HANDLER EDIT MAPEL
 	// BUT HANDLER DELETE MAPEL
 	protected.GET("/genericAllMapels", controllers.GetAllMapel)
+	protected.GET("/genericMapel/:id", controllers.GetMapelByID)
 	protected.GET("/genericMapels", controllers.CGenericMapels) // Query param : ?id_kelas=, ?finished= ambil semua mata pelajaran dan jumlah modulnya melalui kelas
-	// mapel.GET("/:id", controllers.GetMapelByID)
 	protected.POST("/genericMapels", controllers.CreateMapel)
 	protected.PUT("/genericMapels/:id", controllers.UpdateMapel)
 	protected.DELETE("/genericMapels/:id", controllers.DeleteMapel)

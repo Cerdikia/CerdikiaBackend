@@ -1,0 +1,26 @@
+# Go binary files
+/bin/
+/obj/
+
+# Go workspace files
+*.test
+
+# IDE files (optional, jika menggunakan editor tertentu)
+.idea/
+.vscode/
+
+# File konfigurasi sistem yang tidak perlu
+*.log
+
+# File .env (pastikan tidak di-push ke repositori untuk alasan keamanan)
+.env
+
+# docker-compose.yml
+# Dockerfile
+entrypoint.sh
+wait-for-it.sh
+zunks/
+
+uploads/
+
+controllers/adminControllersCopy
