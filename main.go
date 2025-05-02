@@ -77,7 +77,7 @@ func main() {
 	protected.GET("/genericModule/:id", controllers.GetModuleByID)
 
 	// ========= SOAL ==============================
-	protected.GET("/genericModule/:id_module", controllers.CGenericSoal) // ambil soal dari sebuah module dengan acuan id_module
+	protected.GET("/genericSoal/:id_module", controllers.CGenericSoal) // ambil soal dari sebuah module dengan acuan id_module
 
 	// ========= Guru - Mapel Relasi ===============
 	protected.GET("/guru/:id_guru", controllers.GetMapelByGuru)
