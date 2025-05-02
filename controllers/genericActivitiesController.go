@@ -148,12 +148,12 @@ func CGenericModules(c *gin.Context) {
 	}
 }
 
-func CGenericModule(c *gin.Context) {
+func CGenericSoal(c *gin.Context) {
 	// var response models.BaseResponseModel
 
 	idModule := c.Param("id_module")
 
-	result, msg := repositories.GetGenericModule(c, idModule)
+	result, msg := repositories.GetGenericSoal(c, idModule)
 
 	if strings.Contains(msg, "error fetching data") {
 		c.JSON(http.StatusBadRequest, models.BaseResponseModel{

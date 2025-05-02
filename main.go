@@ -71,11 +71,13 @@ func main() {
 	// BUT HANDLER DELETE MODULE
 	protected.GET("/genericModules", controllers.CGenericModules) // ambil semua module dengan acuan  mapel
 	// r.GET("/", controllers.GetAllModules)
-	// module.GET("/:id", controllers.GetModuleByID)
 	protected.POST("/genericModules", controllers.CreateModule)
 	protected.PUT("/genericModules/:id", controllers.UpdateModule)
 	protected.DELETE("/genericModules/:id", controllers.DeleteModule)
-	protected.GET("/genericModule/:id_module", controllers.CGenericModule) // ambil soal dari sebuah module dengan acuan id_module
+	protected.GET("/genericModule/:id", controllers.GetModuleByID)
+
+	// ========= SOAL ==============================
+	protected.GET("/genericModule/:id_module", controllers.CGenericSoal) // ambil soal dari sebuah module dengan acuan id_module
 
 	// ========= Guru - Mapel Relasi ===============
 	protected.GET("/guru/:id_guru", controllers.GetMapelByGuru)

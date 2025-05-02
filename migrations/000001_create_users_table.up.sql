@@ -179,6 +179,9 @@ VALUES (2, 'Matematika');
 INSERT INTO mapel (id_mapel, mapel)
 VALUES (3, 'Bahasa Inggris');
 
+INSERT INTO kelas (id_kelas, kelas)
+VALUES (1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5'), (6, '6');
+
 -- Insert guru (sekali saja)
 INSERT INTO guru (email, nama, jabatan)
 VALUES ('guru1@guru.com', 'guru1', 'walikelas 1'), ('guru2@guru.com', 'guru2', 'guru bahasa inggris')
