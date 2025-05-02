@@ -160,7 +160,7 @@ ORDER BY kelas ASC;`
 	return genericActivities, fmt.Sprintf("Success")
 }
 
-func GetGenericModule(c *gin.Context, mapel string) ([]soal.GenericSoalModelResponse, string) {
+func GetGenericSoal(c *gin.Context, mapel string) ([]soal.GenericSoalModelResponse, string) {
 	var genericActivities []soal.GenericSoalModelResponse
 	// var result models.BaseResponseModel
 
