@@ -6,6 +6,7 @@ import (
 	"coba1BE/services"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -14,6 +15,7 @@ import (
 func ReciveAndStoreImage(c *gin.Context) (url *soal.UploadImageResponse, mesage string) {
 	var result soal.UploadImageResponse
 	const maxUploadSize = 2 << 20 // 2MB
+	basuUrl := os.Getenv("BASEURL")
 
 	// Batasi ukuran request body
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, maxUploadSize)
@@ -43,7 +45,7 @@ func ReciveAndStoreImage(c *gin.Context) (url *soal.UploadImageResponse, mesage 
 	fmt.Println("url : /uploads/" + uniqueFileName)
 
 	result = soal.UploadImageResponse{
-		Url: fmt.Sprintf("http://localhost:81/uploads/%s", uniqueFileName),
+		Url: fmt.Sprintf("%s/uploads/%s", basuUrl, uniqueFileName),
 	}
 
 	return &result, "Success"
