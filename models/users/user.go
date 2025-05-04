@@ -5,10 +5,11 @@ import (
 )
 
 type Siswa struct {
-	Email       string    `json:"email" gorm:"type:varchar(100);unique;not null"`
-	Nama        string    `json:"nama,omitempty" gorm:"type:varchar(100)"`
-	IdKelas     *int      `json:"id_kelas,omitempty" gorm:"type:int"`
-	DateCreated time.Time `json:"date_created" gorm:"type:timestamp;default:CURRENT_TIMESTAMP"`
+	Email        string    `json:"email" gorm:"type:varchar(100);unique;not null"`
+	Nama         string    `json:"nama,omitempty" gorm:"type:varchar(100)"`
+	IdKelas      *int      `json:"id_kelas,omitempty" gorm:"type:int"`
+	DateCreated  time.Time `json:"date_created" gorm:"type:timestamp;default:CURRENT_TIMESTAMP"`
+	ImageProfile string    `json:"image_profile,omitempty" gorm:"type:text"`
 }
 
 // TableName memberikan nama tabel yang eksplisit
@@ -17,15 +18,16 @@ func (Siswa) TableName() string {
 }
 
 type UserProfile struct {
-	ID          *int    `json:"id,omitempty"` // optional
-	Email       string  `json:"email"`
-	Nama        string  `json:"nama"`
-	Role        string  `json:"role"`               // siswa/guru/admin
-	IdKelas     *int    `json:"id_kelas,omitempty"` // optional
-	IdMapel     *int    `json:"id_mapel,omitempty"` // optional
-	Jabatan     *string `json:"jabatan,omitempty"`
-	Keterangan  *string `json:"keterangan,omitempty"`
-	DateCreated string  `json:"date_created"`
+	ID           *int    `json:"id,omitempty"` // optional
+	Email        string  `json:"email"`
+	Nama         string  `json:"nama"`
+	Role         string  `json:"role"`               // siswa/guru/admin
+	IdKelas      *int    `json:"id_kelas,omitempty"` // optional
+	IdMapel      *int    `json:"id_mapel,omitempty"` // optional
+	Jabatan      *string `json:"jabatan,omitempty"`
+	Keterangan   *string `json:"keterangan,omitempty"`
+	DateCreated  string  `json:"date_created"`
+	ImageProfile string  `json:"image_profile"`
 }
 
 type UserProfileReq struct {
@@ -69,11 +71,12 @@ type RefreshResponse struct {
 }
 
 type Guru struct {
-	ID          uint      `gorm:"primaryKey" json:"id"`
-	Email       string    `gorm:"type:varchar(100);unique;not null" json:"email"`
-	Nama        string    `gorm:"size:100;not null" json:"nama"`
-	Jabatan     *string   `gorm:"size:100" json:"jabatan,omitempty"` // nullable
-	DateCreated time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"date_created"`
+	ID           uint      `gorm:"primaryKey" json:"id"`
+	Email        string    `gorm:"type:varchar(100);unique;not null" json:"email"`
+	Nama         string    `gorm:"size:100;not null" json:"nama"`
+	Jabatan      *string   `gorm:"size:100" json:"jabatan,omitempty"` // nullable
+	DateCreated  time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"date_created"`
+	ImageProfile string    `json:"image_profile,omitempty" gorm:"type:text"`
 }
 
 // TableName memberikan nama tabel yang eksplisit
@@ -111,10 +114,11 @@ type GuruMapelRequest struct {
 }
 
 type Admin struct {
-	Email       string    `gorm:"primaryKey;unique;size:100" json:"email"`
-	Nama        string    `gorm:"size:100;not null" json:"nama"`
-	Keterangan  *string   `gorm:"type:text" json:"keterangan,omitempty"` // nullable
-	DateCreated time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"date_created"`
+	Email        string    `gorm:"primaryKey;unique;size:100" json:"email"`
+	Nama         string    `gorm:"size:100;not null" json:"nama"`
+	Keterangan   *string   `gorm:"type:text" json:"keterangan,omitempty"` // nullable
+	DateCreated  time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"date_created"`
+	ImageProfile string    `json:"image_profile,omitempty" gorm:"type:text"`
 }
 
 // TableName memberikan nama tabel yang eksplisit
