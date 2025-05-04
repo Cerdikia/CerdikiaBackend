@@ -20,7 +20,10 @@
 entrypoint.sh
 wait-for-it.sh
 zunks/
+zunks/insert.sql
 
 uploads/
 
 controllers/adminControllersCopy
+migrate.exe
+docker-entrypoint-initdb.d/
