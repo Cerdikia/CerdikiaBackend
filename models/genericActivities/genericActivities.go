@@ -18,7 +18,7 @@ type Module struct {
 	Module          *int   `json:"module"` // nullable
 	ModuleJudul     string `json:"module_judul"`
 	ModuleDeskripsi string `json:"module_deskripsi"`
-	IsReady         bool   `gorm:"column:is_ready;default:false"`
+	IsReady         bool   `gorm:"column:is_ready;default:false" json:"is_ready"`
 
 	// Optional preload relasi
 	// Mapel Mapel `gorm:"foreignKey:IDMapel;references:IDMapel" json:"-"`
@@ -43,7 +43,7 @@ type GenericModulesKelasResponse struct {
 	Module          int    `json:"module" gorm:"column:module"`
 	ModuleJudul     string `json:"module_judul" gorm:"column:module_judul"`
 	ModuleDeskripsi string `json:"module_deskripsi" gorm:"column:module_deskripsi"`
-	IsCompleted     bool   `json:"is_completed" gorm:"column:is_completed"`
+	IsReady         bool   `json:"is_ready" gorm:"column:is_ready"`
 }
 
 type SpesifiedModulesKelasResponse struct {
@@ -52,7 +52,7 @@ type SpesifiedModulesKelasResponse struct {
 	Module          int    `json:"module" gorm:"column:module"`
 	ModuleJudul     string `json:"module_judul" gorm:"column:module_judul"`
 	ModuleDeskripsi string `json:"module_deskripsi" gorm:"column:module_deskripsi"`
-	IsCompleted     bool   `json:"is_completed" gorm:"column:is_completed"`
+	IsReady         bool   `json:"is_ready" gorm:"column:is_ready"`
 }
 
 type GenericModulesResponse struct {
@@ -62,4 +62,15 @@ type GenericModulesResponse struct {
 	Module          int    `json:"module" gorm:"column:module"`
 	ModuleJudul     string `json:"module_judul" gorm:"column:module_judul"`
 	ModuleDeskripsi string `json:"module_deskripsi" gorm:"column:module_deskripsi"`
+	IsReady         bool   `json:"is_ready" gorm:"column:is_ready"`
+}
+
+type GenericKelasResponse struct {
+	// id_module, module, module_judul, module_deskripsi
+	IDModule        int    `json:"id_module" gorm:"column:id_module"`
+	Module          int    `json:"module" gorm:"column:module"`
+	ModuleJudul     string `json:"module_judul" gorm:"column:module_judul"`
+	ModuleDeskripsi string `json:"module_deskripsi" gorm:"column:module_deskripsi"`
+	IsReady         bool   `json:"is_ready" gorm:"column:is_ready"`
+	Mapel           string `gorm:"column:mapel;type:varchar(255);not null" json:"mapel"`
 }

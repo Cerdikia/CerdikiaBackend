@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/mail"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -27,6 +28,12 @@ func CreateUser(c *gin.Context) {
 	case "siswa":
 		var siswa users.Siswa
 		if err = c.ShouldBindJSON(&siswa); err == nil {
+			// Set default profile image if not provided
+			if siswa.ImageProfile == "" {
+				basuUrl := os.Getenv("BASEURL")
+				siswa.ImageProfile = fmt.Sprintf("%s/uploads/default_user.png", basuUrl)
+			}
+
 			err = db.Create(&siswa).Error
 			if err == nil {
 				errPoint := repositories.CreatePointFirst(siswa.Email)
@@ -422,4 +429,48 @@ func UpdatePoint(c *gin.Context) {
 		Data:    input,
 	}
 	c.JSON(http.StatusOK, response)
+}
+
+func UpdateSiswaImageProfile(c *gin.Context) {
+	email := c.Param("email")
+	role := c.Param("role")
+	db := config.DB
+	validRoles := map[string]bool{"siswa": true, "admin": true, "guru": true}
+
+	if !validRoles[role] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Role tidak valid. Gunakan: siswa, admin, guru"})
+		return
+	}
+
+	uploadResult, message := repositories.ReciveAndStoreImage(c)
+	if uploadResult == nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": message})
+		return
+	}
+
+	switch role {
+	case "siswa":
+		if err := db.Model(&users.Siswa{}).Where("email = ?", email).Update("image_profile", uploadResult.Url).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Siswa tidak ditemukan"})
+			return
+		}
+	case "guru":
+		if err := db.Model(&users.Guru{}).Where("email = ?", email).Update("image_profile", uploadResult.Url).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Guru tidak ditemukan"})
+			return
+		}
+	case "admin":
+		if err := db.Model(&users.Admin{}).Where("email = ?", email).Update("image_profile", uploadResult.Url).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Admin tidak ditemukan"})
+			return
+		}
+	default:
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Role tidak valid"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":       fmt.Sprintf("Image profile %s berhasil diperbarui", role),
+		"image_profile": uploadResult.Url,
+	})
 }

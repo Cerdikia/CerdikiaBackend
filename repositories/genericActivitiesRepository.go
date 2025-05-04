@@ -114,7 +114,7 @@ func GetGenericModules(c *gin.Context, mapel string, finished bool) ([]genericac
 
 	db := config.DB
 	query := `SELECT
-kelas.kelas, id_module, module, module_judul, module_deskripsi
+kelas.kelas, id_module, module, module_judul, module_deskripsi, is_ready
 FROM modules
 JOIN
 	kelas ON modules.id_kelas = kelas.id_kelas
@@ -134,18 +134,30 @@ ORDER BY kelas ASC;`
 	return genericActivities, fmt.Sprintf("Success")
 }
 
-func GetGenericModulesByKelas(c *gin.Context, idKelas string, finished bool) ([]genericactivities.GenericModulesResponse, string) {
-	var genericActivities []genericactivities.GenericModulesResponse
+func GetGenericModulesByKelas(c *gin.Context, idKelas string, finished bool) ([]genericactivities.GenericKelasResponse, string) {
+	var genericActivities []genericactivities.GenericKelasResponse
 	// var result models.BaseResponseModel
 
 	db := config.DB
-	query := `SELECT
-kelas.kelas, id_module, module, module_judul, module_deskripsi
+	// 	query := `SELECT
+	// kelas.kelas, id_module, module, module_judul, module_deskripsi
+	// FROM modules
+	// JOIN
+	// 	kelas ON modules.id_kelas = kelas.id_kelas
+	// WHERE modules.id_kelas = ? AND is_ready = ?
+	// ORDER BY kelas ASC;`
+
+	query := `SELECT modules.id_module,
+  modules.module,
+  modules.module_judul,
+  modules.module_deskripsi,
+	modules.is_ready,
+  mapel.mapel
 FROM modules
-JOIN
-	kelas ON modules.id_kelas = kelas.id_kelas
-WHERE modules.id_kelas = ? AND is_ready = ?
-ORDER BY kelas ASC;`
+JOIN kelas ON modules.id_kelas = kelas.id_kelas
+JOIN mapel ON modules.id_mapel = mapel.id_mapel
+WHERE modules.id_kelas = ? AND modules.is_ready = ?
+ORDER BY kelas.kelas ASC;`
 
 	tmpResult := db.Raw(query, idKelas, finished).Scan(&genericActivities)
 

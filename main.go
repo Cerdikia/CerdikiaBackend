@@ -96,6 +96,7 @@ func main() {
 	protected.GET("/getDataUser", controllers.GetUser)
 	protected.PUT("/editDataUser/:role", controllers.UpdateDataActor)
 	protected.DELETE("/deleteDataUser", controllers.DeleteDataActor)
+	protected.PATCH("/patchDataUser/:role/:email", controllers.UpdateSiswaImageProfile)
 
 	// ========= Siawa Verified ===============
 	protected.GET("/verified", controllers.Beingverified)
@@ -164,9 +165,9 @@ func main() {
 	protected.DELETE("/kelas/:id", controllers.DeleteKelas)
 
 	// =================== ENERGY CRUD ====================================
-	r.GET("/user-energy/:email", controllers.GetUserEnergy)
-	r.POST("/user-energy/:email", controllers.UseEnergyForAll)
-	r.POST("/add-energy/:email", controllers.AddEnergyForAll)
+	protected.GET("/user-energy/:email", controllers.GetUserEnergy)
+	protected.POST("/user-energy/:email", controllers.UseEnergyForAll)
+	protected.POST("/add-energy/:email", controllers.AddEnergyForAll)
 
 	// Menutup koneksi database saat aplikasi berhenti
 	sqlDB, err := db.DB()
