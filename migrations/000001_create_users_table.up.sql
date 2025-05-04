@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS admin (
   nama VARCHAR(100) NOT NULL,
   keterangan TEXT,
   date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
+  image_profile text DEFAULT NULL,
   PRIMARY KEY (email),
   UNIQUE KEY uniq_admin_email (email)
 );
@@ -24,10 +25,22 @@ CREATE TABLE IF NOT EXISTS siswa (
   nama VARCHAR(100) DEFAULT NULL,
   id_kelas INT DEFAULT NULL,
   date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
+  image_profile text DEFAULT NULL,
   PRIMARY KEY (email),
   UNIQUE KEY uniq_siswa_email (email),
   KEY fk_siswa_kelas (id_kelas),
   CONSTRAINT fk_siswa_kelas FOREIGN KEY (id_kelas) REFERENCES kelas (id_kelas) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Tabel user_energy
+CREATE TABLE IF NOT EXISTS user_energy (
+  email VARCHAR(100) NOT NULL,
+  energy INT DEFAULT 0,
+  last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (email),
+  CONSTRAINT fk_user_energy_email FOREIGN KEY (email)
+    REFERENCES siswa(email)
+    ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- Tabel barang
@@ -69,6 +82,7 @@ CREATE TABLE IF NOT EXISTS guru (
   nama VARCHAR(100) NOT NULL,
   jabatan VARCHAR(100) DEFAULT NULL,
   date_created DATETIME DEFAULT CURRENT_TIMESTAMP,
+  image_profile text DEFAULT NULL,
   PRIMARY KEY (id)
 );
 

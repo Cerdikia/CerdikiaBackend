@@ -4,6 +4,7 @@ import (
 	"coba1BE/config"
 	"coba1BE/controllers"
 	"coba1BE/middleware"
+	"coba1BE/services"
 	"fmt"
 	"os"
 
@@ -46,6 +47,11 @@ func main() {
 	db, err := config.ConnectDatabase()
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
+	}
+
+	err = services.StartEnergyCron()
+	if err != nil {
+		log.Fatal("Failed to Start Cron:", err)
 	}
 
 	r.GET("/try", controllers.GetUsers)
@@ -156,6 +162,11 @@ func main() {
 	protected.POST("/kelas", controllers.CreateKelas)
 	protected.PUT("/kelas/:id", controllers.UpdateKelas)
 	protected.DELETE("/kelas/:id", controllers.DeleteKelas)
+
+	// =================== ENERGY CRUD ====================================
+	r.GET("/user-energy/:email", controllers.GetUserEnergy)
+	r.POST("/user-energy/:email", controllers.UseEnergyForAll)
+	r.POST("/add-energy/:email", controllers.AddEnergyForAll)
 
 	// Menutup koneksi database saat aplikasi berhenti
 	sqlDB, err := db.DB()

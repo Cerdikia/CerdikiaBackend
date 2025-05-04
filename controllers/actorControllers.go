@@ -31,10 +31,20 @@ func CreateUser(c *gin.Context) {
 			if err == nil {
 				errPoint := repositories.CreatePointFirst(siswa.Email)
 				errVerivied := repositories.CreateAcountVerifiedFirst(siswa.Email)
-				if errPoint == nil || errVerivied == nil {
+				message := repositories.CreateUserEnergyFirstTime(siswa.Email)
+				if errPoint == nil || errVerivied == nil || strings.Contains(strings.ToLower(message), "success") {
 					c.JSON(201, gin.H{
 						"message": "User dengan email " + siswa.Email + " berhasil dibuat",
 					})
+					return
+				} else if errPoint != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error di errPoint": errPoint.Error()})
+					return
+				} else if errVerivied != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{"error di errVerivied": errVerivied.Error()})
+					return
+				} else {
+					c.JSON(http.StatusInternalServerError, gin.H{"error di CreateUserEnergyFirstTime": message})
 					return
 				}
 			}
