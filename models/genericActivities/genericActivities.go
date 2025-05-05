@@ -53,6 +53,7 @@ type SpesifiedModulesKelasResponse struct {
 	ModuleJudul     string `json:"module_judul" gorm:"column:module_judul"`
 	ModuleDeskripsi string `json:"module_deskripsi" gorm:"column:module_deskripsi"`
 	IsReady         bool   `json:"is_ready" gorm:"column:is_ready"`
+	IsCompleted     bool   `json:"is_completed" gorm:"column:is_completed"`
 }
 
 type GenericModulesResponse struct {
