@@ -92,11 +92,11 @@ func main() {
 	// ========= Actor ===============
 	protected.GET("/getAllUsers", controllers.GetUsers)
 	// protected.GET("/siswa", controllers.GetSiswa)
-	protected.GET("/getDataActor/:role", controllers.GetDataActor)
+	protected.GET("/getDataActor/:role/:email", controllers.GetDataActor)
 	protected.GET("/getDataUser", controllers.GetUser)
 	protected.PUT("/editDataUser/:role", controllers.UpdateDataActor)
 	protected.DELETE("/deleteDataUser", controllers.DeleteDataActor)
-	protected.PATCH("/patchDataUser/:role/:email", controllers.UpdateSiswaImageProfile)
+	protected.PATCH("/patchImageProfile/:role/:email", controllers.UpdateSiswaImageProfile)
 
 	// ========= Siawa Verified ===============
 	protected.GET("/verified", controllers.Beingverified)
