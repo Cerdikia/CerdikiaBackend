@@ -78,6 +78,51 @@ func GetDataActor(role string) models.BaseResponseModel {
 	return result
 }
 
+func GetDataActorByRoleAndEmail(role, email string) models.BaseResponseModel {
+	var UserProfile []users.UserProfile
+	var result models.BaseResponseModel
+	var query string
+
+	db := config.DB
+
+	switch role {
+	case "siswa":
+		query = `SELECT email, nama, id_kelas, date_created FROM siswa WHERE email = ?`
+	case "guru":
+		query = `SELECT id, email, nama, jabatan, date_created FROM guru WHERE email = ?`
+	case "admin":
+		query = `SELECT email, nama, keterangan, date_created FROM admin WHERE email = ?`
+	default:
+		result = models.BaseResponseModel{
+			Message: "undifine role",
+			Data:    nil,
+		}
+		return result
+	}
+	// query := `SELECT email, nama, kelas, date_created FROM siswa`
+
+	// tmpResult := db.Raw(query).Scan(&users)
+	tmpResult := db.Raw(query, email).Scan(&UserProfile)
+
+	if tmpResult.Error != nil {
+		fmt.Println(tmpResult.Error)
+		result = models.BaseResponseModel{
+			Message: tmpResult.Error.Error(),
+			Data:    nil,
+		}
+	} else {
+		for i := range UserProfile {
+			UserProfile[i].Role = role
+		}
+		result = models.BaseResponseModel{
+			Message: "Data retrieved successfully",
+			Data:    UserProfile,
+		}
+	}
+
+	return result
+}
+
 func GetAllUsers() models.BaseResponseModel {
 	var users []users.UserProfile
 	var result models.BaseResponseModel
@@ -118,11 +163,11 @@ func GetUserByEmail(email, role string) (*users.UserProfile, string) {
 	// query := `SELECT email, nama, kelas, date_created FROM siswa WHERE email = ?`
 	switch role {
 	case "siswa":
-		query = `SELECT email, nama, id_kelas, NULL AS jabatan, NULL AS keterangan, date_created FROM siswa WHERE email = ?`
+		query = `SELECT email, nama, id_kelas, NULL AS jabatan, NULL AS keterangan, date_created, image_profile FROM siswa WHERE email = ?`
 	case "guru":
-		query = `SELECT email, id_mapel, nama, NULL AS id_kelas, jabatan, NULL AS keterangan, date_created FROM guru WHERE email = ?`
+		query = `SELECT id, email, nama, NULL AS id_kelas, jabatan, NULL AS keterangan, date_created, image_profile FROM guru WHERE email = ?`
 	case "admin":
-		query = `SELECT email, nama, NULL AS id_kelas, NULL AS jabatan, keterangan, date_created FROM admin WHERE email = ?`
+		query = `SELECT email, nama, NULL AS id_kelas, NULL AS jabatan, keterangan, date_created, image_profile FROM admin WHERE email = ?`
 	default:
 		return nil, "error bad request"
 	}

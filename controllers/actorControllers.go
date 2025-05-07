@@ -59,6 +59,10 @@ func CreateUser(c *gin.Context) {
 	case "guru":
 		var guru users.Guru
 		if err = c.ShouldBindJSON(&guru); err == nil {
+			if guru.ImageProfile == "" {
+				basuUrl := os.Getenv("BASEURL")
+				guru.ImageProfile = fmt.Sprintf("%s/uploads/default_user.png", basuUrl)
+			}
 			err = db.Create(&guru).Error
 			if err == nil {
 				c.JSON(201, gin.H{
@@ -70,6 +74,10 @@ func CreateUser(c *gin.Context) {
 	case "admin":
 		var admin users.Admin
 		if err = c.ShouldBindJSON(&admin); err == nil {
+			if admin.ImageProfile == "" {
+				basuUrl := os.Getenv("BASEURL")
+				admin.ImageProfile = fmt.Sprintf("%s/uploads/default_user.png", basuUrl)
+			}
 			err = db.Create(&admin).Error
 			if err == nil {
 				c.JSON(201, gin.H{
@@ -98,6 +106,7 @@ func GetSiswa(c *gin.Context) {
 func GetDataActor(c *gin.Context) {
 	var response models.BaseResponseModel
 	role := c.Param("role")
+	email := c.Param("email")
 
 	// chek apakah parameter di isi
 	if role == "" {
@@ -107,7 +116,12 @@ func GetDataActor(c *gin.Context) {
 		})
 		return
 	}
-	response = repositories.GetDataActor(role)
+
+	if email != "" {
+		response = repositories.GetDataActorByRoleAndEmail(role, email)
+	} else {
+		response = repositories.GetDataActor(role)
+	}
 
 	c.JSON(http.StatusOK, response)
 }
