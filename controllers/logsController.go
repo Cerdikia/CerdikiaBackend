@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/mail"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -364,4 +365,65 @@ func GetLogsBy(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, logs)
+}
+
+// ============================= GET LOGS PERIODE ====================================
+
+func GetLogsByPeriod(c *gin.Context) {
+	var logs []logsprogres.Log
+	db := config.DB
+
+	period := c.Query("periode") // contoh: "today", "week", "month", "semester", "year"
+	now := time.Now()
+	var start, end time.Time
+
+	switch period {
+	case "today":
+		start = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+		end = start.Add(24 * time.Hour)
+
+	case "week":
+		weekday := int(now.Weekday())
+		if weekday == 0 { // Minggu
+			weekday = 7
+		}
+		start = time.Date(now.Year(), now.Month(), now.Day()-weekday+1, 0, 0, 0, 0, now.Location())
+		end = start.AddDate(0, 0, 7)
+
+	case "month":
+		start = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
+		end = start.AddDate(0, 1, 0)
+
+	case "semester":
+		if now.Month() <= 6 {
+			start = time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location())
+			end = time.Date(now.Year(), 7, 1, 0, 0, 0, 0, now.Location())
+		} else {
+			start = time.Date(now.Year(), 7, 1, 0, 0, 0, 0, now.Location())
+			end = time.Date(now.Year()+1, 1, 1, 0, 0, 0, 0, now.Location())
+		}
+
+	case "year":
+		start = time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location())
+		end = time.Date(now.Year()+1, 1, 1, 0, 0, 0, 0, now.Location())
+
+	default:
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Periode tidak valid. Gunakan: today, week, month, semester, year",
+		})
+		return
+	}
+
+	if err := db.Where("created_at >= ? AND created_at < ?", start, end).Find(&logs).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Gagal mengambil data logs",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.BaseResponseModel{
+		Message: fmt.Sprintf("Data logs berdasarkan periode : %s", period),
+		Data:    logs,
+	})
 }

@@ -82,6 +82,7 @@ func main() {
 	protected.DELETE("/genericModules/:id", controllers.DeleteModule)
 	protected.GET("/genericModule/:id", controllers.GetModuleByID)
 	r.PUT("/togle-module/:id_module", controllers.ToggleModuleReady)
+	r.GET("/stats", controllers.GetStats)
 
 	// ========= SOAL ==============================
 	protected.GET("/genericSoal/:id_module", controllers.CGenericSoal) // ambil soal dari sebuah module dengan acuan id_module
@@ -146,6 +147,7 @@ func main() {
 	// r.DELETE("/:id", controllers.DeleteLog)
 	protected.GET("/logs", controllers.GetLogsBydEmailWithToken) // get logs where token email
 	protected.GET("/logsBy", controllers.GetLogsBy)              // GET /logs/email/john@example.com/module/2
+	r.GET("/logs-periode", controllers.GetLogsByPeriod)
 
 	// =================== Rekap Smester ====================================
 	protected.POST("/rekap-semester", controllers.RekapSemester)
