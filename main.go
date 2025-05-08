@@ -82,7 +82,9 @@ func main() {
 	protected.DELETE("/genericModules/:id", controllers.DeleteModule)
 	protected.GET("/genericModule/:id", controllers.GetModuleByID)
 	r.PUT("/togle-module/:id_module", controllers.ToggleModuleReady)
-	r.GET("/stats", controllers.GetStats)
+	r.GET("/stats", controllers.GetStats) // Endpoint lama untuk kompatibilitas
+	r.GET("/all-stats", controllers.GetAllStats) // Endpoint baru yang menampilkan semua statistik
+	r.GET("/recent-activities", controllers.GetRecentActivities) // Endpoint untuk menampilkan aktivitas terakhir
 
 	// ========= SOAL ==============================
 	protected.GET("/genericSoal/:id_module", controllers.CGenericSoal) // ambil soal dari sebuah module dengan acuan id_module
