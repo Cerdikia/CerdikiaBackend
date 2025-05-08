@@ -61,90 +61,78 @@ func CGenericMapels(c *gin.Context) {
 }
 
 func CGenericModules(c *gin.Context) {
-	// var response models.BaseResponseModel
 	email := c.Query("email")
 	idMapel := c.Query("id_mapel")
 	idKelas := c.Query("id_kelas")
-	strFinished := c.DefaultQuery("finished", "1")
+	strFinished := c.Query("finished")
 
-	finished, err := strconv.ParseBool(strFinished)
+	var finished bool
+	var err error
 
-	if err != nil {
-		// Jika query tidak valid (misal: bukan "true" atau "false")
-		// c.JSON(400, gin.H{"error": "Parameter 'finished' harus bernilai true atau false"})
-		c.JSON(http.StatusBadRequest, models.BaseResponseModel{
-			Message: "Parameter 'finished' harus bernilai true atau false",
-			Data:    nil,
-		})
-		return
+	// Parse finished jika ada
+	if strFinished != "" {
+		finished, err = strconv.ParseBool(strFinished)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, models.BaseResponseModel{
+				Message: "Parameter 'finished' harus bernilai true atau false",
+				Data:    nil,
+			})
+			return
+		}
 	}
 
-	if email != "" && idKelas != "" && idMapel != "" {
+	// Helper untuk respon JSON
+	sendResponse := func(result interface{}, msg string) {
+		status := http.StatusOK
+		if !strings.Contains(msg, "Success") {
+			status = http.StatusBadRequest
+			result = nil
+		}
+		c.JSON(status, models.BaseResponseModel{
+			Message: msg,
+			Data:    result,
+		})
+	}
+
+	// Logic query kombinasi
+	switch {
+	case email != "" && idKelas != "" && idMapel != "" && strFinished != "":
 		result, msg := repositories.SpesifiedModulesKelas(c, email, idKelas, idMapel, finished)
-		if strings.Contains(msg, "Success") {
-			c.JSON(http.StatusOK, models.BaseResponseModel{
-				Message: msg,
-				Data:    result,
-			})
-			return
-		} else {
-			c.JSON(http.StatusBadRequest, models.BaseResponseModel{
-				Message: msg,
-				Data:    nil,
-			})
-			return
-		}
-	} else if idKelas != "" && idMapel != "" {
+		sendResponse(result, msg)
+
+	case email != "" && idKelas != "" && idMapel != "":
+		result, msg := repositories.SpesifiedModulesKelasAllStatus(c, email, idKelas, idMapel)
+		sendResponse(result, msg)
+
+	case idKelas != "" && idMapel != "" && strFinished != "":
 		result, msg := repositories.GetGenericModulesKelas(c, idKelas, idMapel, finished)
-		if strings.Contains(msg, "Success") {
-			c.JSON(http.StatusOK, models.BaseResponseModel{
-				Message: msg,
-				Data:    result,
-			})
-			return
-		} else {
-			c.JSON(http.StatusBadRequest, models.BaseResponseModel{
-				Message: msg,
-				Data:    nil,
-			})
-			return
-		}
-	} else if idKelas != "" {
+		sendResponse(result, msg)
+
+	case idKelas != "" && idMapel != "":
+		result, msg := repositories.GetGenericModulesKelasAllStatus(c, idKelas, idMapel)
+		sendResponse(result, msg)
+
+	case idKelas != "" && strFinished != "":
 		result, msg := repositories.GetGenericModulesByKelas(c, idKelas, finished)
-		if strings.Contains(msg, "Success") {
-			c.JSON(http.StatusOK, models.BaseResponseModel{
-				Message: msg,
-				Data:    result,
-			})
-			return
-		} else {
-			c.JSON(http.StatusBadRequest, models.BaseResponseModel{
-				Message: msg,
-				Data:    nil,
-			})
-			return
-		}
-	} else if idMapel != "" {
+		sendResponse(result, msg)
+
+	case idKelas != "":
+		result, msg := repositories.GetGenericModulesByKelasAllStatus(c, idKelas)
+		sendResponse(result, msg)
+
+	case idMapel != "" && strFinished != "":
 		result, msg := repositories.GetGenericModules(c, idMapel, finished)
-		if strings.Contains(msg, "Success") {
-			c.JSON(http.StatusOK, models.BaseResponseModel{
-				Message: msg,
-				Data:    result,
-			})
-			return
-		} else {
-			c.JSON(http.StatusBadRequest, models.BaseResponseModel{
-				Message: msg,
-				Data:    nil,
-			})
-			return
-		}
-	} else {
+		sendResponse(result, msg)
+
+	case idMapel != "":
+		result, msg := repositories.GetGenericModulesAllStatus(c, idMapel)
+		sendResponse(result, msg)
+
+	default:
 		c.JSON(http.StatusBadRequest, models.BaseResponseModel{
-			Message: "Unidetifided Query Params",
+			Message: "Unidentified query params",
 			Data:    nil,
 		})
-		return
 	}
 }
 

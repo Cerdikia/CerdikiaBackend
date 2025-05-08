@@ -81,6 +81,7 @@ func main() {
 	protected.PUT("/genericModules/:id", controllers.UpdateModule)
 	protected.DELETE("/genericModules/:id", controllers.DeleteModule)
 	protected.GET("/genericModule/:id", controllers.GetModuleByID)
+	r.PUT("/togle-module/:id_module", controllers.ToggleModuleReady)
 
 	// ========= SOAL ==============================
 	protected.GET("/genericSoal/:id_module", controllers.CGenericSoal) // ambil soal dari sebuah module dengan acuan id_module

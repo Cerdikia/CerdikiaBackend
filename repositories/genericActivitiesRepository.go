@@ -83,6 +83,42 @@ GROUP BY m.id_module`
 	return genericActivities, fmt.Sprintf("Success")
 }
 
+func SpesifiedModulesKelasAllStatus(c *gin.Context, email, kelas, mapel string) ([]genericactivities.SpesifiedModulesKelasResponse, string) {
+	var genericActivities []genericactivities.SpesifiedModulesKelasResponse
+	// var result models.BaseResponseModel
+	db := config.DB
+	query := `
+			SELECT 
+    m.id_module,
+    m.module,
+    m.module_judul,
+    m.module_deskripsi,
+    m.is_ready,
+    CASE 
+        WHEN COUNT(l.id_logs) > 0 THEN TRUE
+        ELSE FALSE
+    END AS is_completed
+FROM modules m
+LEFT JOIN logs l 
+    ON m.id_module = l.id_module 
+    AND l.email = ?
+WHERE m.id_kelas = ? AND m.id_mapel = ?
+GROUP BY m.id_module`
+
+	tmpResult := db.Raw(query, email, kelas, mapel).Scan(&genericActivities)
+
+	if tmpResult.Error != nil {
+		fmt.Println(tmpResult.Error)
+		return nil, fmt.Sprintf("error fetching data : %e", tmpResult.Error)
+	}
+
+	if tmpResult.RowsAffected == 0 {
+		return nil, fmt.Sprintf("no data found, maybe wrong in query")
+	}
+
+	return genericActivities, fmt.Sprintf("Success")
+}
+
 func GetGenericModulesKelas(c *gin.Context, kelas, mapel string, isFinished bool) ([]genericactivities.GenericModulesKelasResponse, string) {
 	var genericActivities []genericactivities.GenericModulesKelasResponse
 	// var result models.BaseResponseModel
@@ -95,6 +131,31 @@ WHERE id_kelas = ? AND id_mapel = ? AND is_ready = ?
 ORDER BY module ASC;`
 
 	tmpResult := db.Raw(query, kelas, mapel, isFinished).Scan(&genericActivities)
+
+	if tmpResult.Error != nil {
+		fmt.Println(tmpResult.Error)
+		return nil, fmt.Sprintf("error fetching data : %e", tmpResult.Error)
+	}
+
+	if tmpResult.RowsAffected == 0 {
+		return nil, fmt.Sprintf("no data found, maybe wrong in query")
+	}
+
+	return genericActivities, fmt.Sprintf("Success")
+}
+
+func GetGenericModulesKelasAllStatus(c *gin.Context, kelas, mapel string) ([]genericactivities.GenericModulesKelasResponse, string) {
+	var genericActivities []genericactivities.GenericModulesKelasResponse
+	// var result models.BaseResponseModel
+
+	db := config.DB
+	query := `SELECT
+id_module, module, module_judul, module_deskripsi
+FROM modules
+WHERE id_kelas = ? AND id_mapel = ?
+ORDER BY module ASC;`
+
+	tmpResult := db.Raw(query, kelas, mapel).Scan(&genericActivities)
 
 	if tmpResult.Error != nil {
 		fmt.Println(tmpResult.Error)
@@ -134,19 +195,36 @@ ORDER BY kelas ASC;`
 	return genericActivities, fmt.Sprintf("Success")
 }
 
-func GetGenericModulesByKelas(c *gin.Context, idKelas string, finished bool) ([]genericactivities.GenericKelasResponse, string) {
-	var genericActivities []genericactivities.GenericKelasResponse
+func GetGenericModulesAllStatus(c *gin.Context, mapel string) ([]genericactivities.GenericModulesResponse, string) {
+	var genericActivities []genericactivities.GenericModulesResponse
 	// var result models.BaseResponseModel
 
 	db := config.DB
-	// 	query := `SELECT
-	// kelas.kelas, id_module, module, module_judul, module_deskripsi
-	// FROM modules
-	// JOIN
-	// 	kelas ON modules.id_kelas = kelas.id_kelas
-	// WHERE modules.id_kelas = ? AND is_ready = ?
-	// ORDER BY kelas ASC;`
+	query := `SELECT
+kelas.kelas, id_module, module, module_judul, module_deskripsi, is_ready
+FROM modules
+JOIN
+	kelas ON modules.id_kelas = kelas.id_kelas
+WHERE id_mapel = ?
+ORDER BY kelas ASC;`
 
+	tmpResult := db.Raw(query, mapel).Scan(&genericActivities)
+
+	if tmpResult.Error != nil {
+		fmt.Println(tmpResult.Error)
+		return nil, fmt.Sprintf("error fetching data : %e", tmpResult.Error)
+	}
+
+	if tmpResult.RowsAffected == 0 {
+		return nil, fmt.Sprintf("no data found, maybe wrong in query")
+	}
+	return genericActivities, fmt.Sprintf("Success")
+}
+
+func GetGenericModulesByKelas(c *gin.Context, idKelas string, finished bool) ([]genericactivities.GenericKelasResponse, string) {
+	var genericActivities []genericactivities.GenericKelasResponse
+
+	db := config.DB
 	query := `SELECT modules.id_module,
   modules.module,
   modules.module_judul,
@@ -160,6 +238,35 @@ WHERE modules.id_kelas = ? AND modules.is_ready = ?
 ORDER BY kelas.kelas ASC;`
 
 	tmpResult := db.Raw(query, idKelas, finished).Scan(&genericActivities)
+
+	if tmpResult.Error != nil {
+		fmt.Println(tmpResult.Error)
+		return nil, fmt.Sprintf("error fetching data : %e", tmpResult.Error)
+	}
+
+	if tmpResult.RowsAffected == 0 {
+		return nil, fmt.Sprintf("no data found, maybe wrong in query")
+	}
+	return genericActivities, fmt.Sprintf("Success")
+}
+
+func GetGenericModulesByKelasAllStatus(c *gin.Context, idKelas string) ([]genericactivities.GenericKelasResponse, string) {
+	var genericActivities []genericactivities.GenericKelasResponse
+
+	db := config.DB
+	query := `SELECT modules.id_module,
+  modules.module,
+  modules.module_judul,
+  modules.module_deskripsi,
+	modules.is_ready,
+  mapel.mapel
+FROM modules
+JOIN kelas ON modules.id_kelas = kelas.id_kelas
+JOIN mapel ON modules.id_mapel = mapel.id_mapel
+WHERE modules.id_kelas = ?
+ORDER BY kelas.kelas ASC;`
+
+	tmpResult := db.Raw(query, idKelas).Scan(&genericActivities)
 
 	if tmpResult.Error != nil {
 		fmt.Println(tmpResult.Error)
