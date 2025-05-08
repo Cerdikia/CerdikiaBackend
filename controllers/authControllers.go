@@ -60,6 +60,7 @@ func LoginControler(c *gin.Context) {
 				Nama:         userData.Nama,
 				IdKelas:      userData.IdKelas,
 				DateCreated:  userData.DateCreated,
+				ImageProfile: userData.ImageProfile,
 				AccessToken:  accessToken,
 				RefreshToken: refreshToken,
 			}})
@@ -76,6 +77,7 @@ func LoginControler(c *gin.Context) {
 				Jabatan:      userData.Jabatan,
 				IdMapel:      userData.IdMapel,
 				DateCreated:  userData.DateCreated,
+				ImageProfile: userData.ImageProfile,
 				AccessToken:  accessToken,
 				RefreshToken: refreshToken,
 			}})
@@ -91,6 +93,7 @@ func LoginControler(c *gin.Context) {
 				Nama:         userData.Nama,
 				Keterangan:   userData.Keterangan,
 				DateCreated:  userData.DateCreated,
+				ImageProfile: userData.ImageProfile,
 				AccessToken:  accessToken,
 				RefreshToken: refreshToken,
 			}})

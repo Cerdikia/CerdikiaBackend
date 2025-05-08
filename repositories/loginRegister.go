@@ -129,11 +129,11 @@ func GetAllUsers() models.BaseResponseModel {
 
 	db := config.DB
 	query :=
-		`SELECT email, nama, 'siswa' AS role, date_created FROM siswa
+		`SELECT email, nama, 'siswa' AS role, date_created, image_profile FROM siswa
 UNION
-SELECT email, nama, 'guru' AS role, date_created FROM guru
+SELECT email, nama, 'guru' AS role, date_created, image_profile FROM guru
 UNION
-SELECT email, nama, 'admin' AS role, date_created FROM admin;`
+SELECT email, nama, 'admin' AS role, date_created, image_profile FROM admin;`
 
 	tmpResult := db.Raw(query).Scan(&users)
 

@@ -61,6 +61,7 @@ type LoginResponse struct {
 	Jabatan      *string `json:"jabatan,omitempty"`
 	Keterangan   *string `json:"keterangan,omitempty"`
 	DateCreated  string  `json:"date_created"`
+	ImageProfile string  `json:"image_profile"`
 	AccessToken  string  `json:"access_token"`
 	RefreshToken string  `json:"refresh_token"`
 }
