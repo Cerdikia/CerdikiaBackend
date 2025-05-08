@@ -103,3 +103,29 @@ func DeleteModule(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Module deleted successfully"})
 }
+
+func ToggleModuleReady(c *gin.Context) {
+	db := config.DB
+	id := c.Param("id_module") // id_module dari URL
+
+	var module genericactivities.Module
+	if err := db.First(&module, "id_module = ?", id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Module not found"})
+		return
+	}
+
+	// Toggle is_ready
+	module.IsReady = !module.IsReady
+
+	if err := db.Save(&module).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update module"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":      "Module readiness toggled",
+		"is_ready":     module.IsReady,
+		"id_module":    module.IDModule,
+		"modeule_name": module.ModuleJudul,
+	})
+}
