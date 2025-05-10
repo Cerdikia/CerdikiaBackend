@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"coba1BE/models"
+	"coba1BE/models/genericActivities"
 	"coba1BE/repositories"
 	"net/http"
 	"strconv"
@@ -11,32 +12,43 @@ import (
 )
 
 func CGenericMapels(c *gin.Context) {
+	var isReady bool
+	var err error
+	var result []genericActivities.GenericActivitiesResponse
+	var msg string
 	// var response models.BaseResponseModel
 
 	kelas := c.Query("id_kelas")
-	strIsReady := c.DefaultQuery("finished", "0")
-	isReady, err := strconv.ParseBool(strIsReady)
+	strIsReady := c.Query("finished")
 
-	if err != nil {
-		// Jika query tidak valid (misal: bukan "true" atau "false")
-		// c.JSON(400, gin.H{"error": "Parameter 'finished' harus bernilai true atau false"})
-		c.JSON(http.StatusBadRequest, models.BaseResponseModel{
-			Message: "Parameter 'finished' harus bernilai true atau false",
-			Data:    nil,
-		})
-		return
+	if strIsReady != "" {
+		isReady, err = strconv.ParseBool(strIsReady)
+		if err != nil {
+			// Jika query tidak valid (misal: bukan "true" atau "false")
+			// c.JSON(400, gin.H{"error": "Parameter 'finished' harus bernilai true atau false"})
+			c.JSON(http.StatusBadRequest, models.BaseResponseModel{
+				Message: "Parameter 'finished' harus bernilai true atau false",
+				Data:    nil,
+			})
+			return
+		}
 	}
 
 	// chek apakah parameter di isi
-	if kelas == "" {
-		c.JSON(http.StatusBadRequest, models.BaseResponseModel{
-			Message: "no parmeter found",
-			Data:    nil,
-		})
-		return
+	// if kelas == "" {
+	// 	c.JSON(http.StatusBadRequest, models.BaseResponseModel{
+	// 		Message: "no parmeter found",
+	// 		Data:    nil,
+	// 	})
+	// 	return
+	// }
+	if strIsReady != "" {
+		result, msg = repositories.GetGenericActivities(c, kelas, isReady)
+	} else if kelas != "" {
+		result, msg = repositories.GetGenericActivitiesAllStatusKelas(c, kelas)
+	} else {
+		result, msg = repositories.GetGenericActivitiesAllStatus(c)
 	}
-
-	result, msg := repositories.GetGenericActivities(c, kelas, isReady)
 
 	if strings.Contains(msg, "error fetching data") {
 		c.JSON(http.StatusBadRequest, models.BaseResponseModel{
