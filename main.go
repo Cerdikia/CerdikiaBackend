@@ -131,14 +131,18 @@ func main() {
 
 	// ========= Barang ===============
 	// CRUD routes
-	protected.GET("/barang", controllers.GetAllBarang)
-	protected.GET("/barang/:id", controllers.GetBarangByID)
-	protected.POST("/barang", controllers.CreateBarang)
-	protected.PUT("/barang/:id", controllers.UpdateBarang)
-	protected.DELETE("/barang/:id", controllers.DeleteBarang)
-	
-	// New endpoint for gift creation with image upload
-	protected.POST("/gifts", controllers.CreateGift)
+	// protected.GET("/barang", controllers.GetAllBarang)
+	// protected.GET("/barang/:id", controllers.GetBarangByID)
+	// protected.POST("/barang", controllers.CreateBarang)
+	// protected.PUT("/barang/:id", controllers.UpdateBarang)
+	// protected.DELETE("/barang/:id", controllers.DeleteBarang)
+
+	// Endpoints for gift management with image upload
+	r.POST("/gifts", controllers.CreateGift)
+	r.GET("/gifts", controllers.GetAllGifts)
+	r.GET("/gifts/:id", controllers.GetGiftByID)
+	r.PUT("/gifts/:id", controllers.UpdateGift)
+	r.DELETE("/gifts/:id", controllers.DeleteGift)
 
 	// =================== Tukara Point ====================================
 	// Route tukar barang
