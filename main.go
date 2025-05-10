@@ -131,11 +131,11 @@ func main() {
 
 	// ========= Barang ===============
 	// CRUD routes
-	protected.GET("/barang", controllers.GetAllBarang)
-	protected.GET("/barang/:id", controllers.GetBarangByID)
-	protected.POST("/barang", controllers.CreateBarang)
-	protected.PUT("/barang/:id", controllers.UpdateBarang)
-	protected.DELETE("/barang/:id", controllers.DeleteBarang)
+	// protected.GET("/barang", controllers.GetAllBarang)
+	// protected.GET("/barang/:id", controllers.GetBarangByID)
+	// protected.POST("/barang", controllers.CreateBarang)
+	// protected.PUT("/barang/:id", controllers.UpdateBarang)
+	// protected.DELETE("/barang/:id", controllers.DeleteBarang)
 
 	// Endpoints for gift management with image upload
 	r.POST("/gifts", controllers.CreateGift)
