@@ -10,6 +10,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// MapelWithModuleCount represents a mapel with its module count
+type MapelWithModuleCount struct {
+	IDMapel     int    `json:"id_mapel"`
+	Mapel       string `json:"mapel"`
+	JumlahModul int    `json:"jumlah_modul"`
+}
+
 // GET /mapel
 func GetAllMapel(c *gin.Context) {
 	// 	// Ambil query params
@@ -29,21 +36,35 @@ func GetAllMapel(c *gin.Context) {
 
 	offset := (pageInt - 1) * limitInt
 
-	var mapels []genericactivities.Mapel
-	if err := config.DB.Limit(limitInt).
-		Offset(offset).
-		Order("mapel ASC").Find(&mapels).Error; err != nil {
-		// c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// Query to get mapels with module count
+	var mapelsWithCount []MapelWithModuleCount
+	query := `
+		SELECT 
+			m.id_mapel,
+			m.mapel,
+			COUNT(md.id_module) AS jumlah_modul
+		FROM 
+			mapel m
+		LEFT JOIN 
+			modules md ON m.id_mapel = md.id_mapel
+		GROUP BY 
+			m.id_mapel, m.mapel
+		ORDER BY 
+			m.mapel ASC
+		LIMIT ? OFFSET ?
+	`
+
+	if err := config.DB.Raw(query, limitInt, offset).Scan(&mapelsWithCount).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, models.BaseResponseModel{
 			Message: err.Error(),
 			Data:    nil,
 		})
 		return
 	}
-	// c.JSON(http.StatusOK, mapels)
+
 	c.JSON(http.StatusOK, models.BaseResponseModel{
 		Message: "success get data mapel",
-		Data:    mapels,
+		Data:    mapelsWithCount,
 	})
 }
 

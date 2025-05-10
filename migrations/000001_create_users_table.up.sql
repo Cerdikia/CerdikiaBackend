@@ -129,21 +129,21 @@ CREATE TABLE IF NOT EXISTS soal (
 -- Tabel logs
 CREATE TABLE IF NOT EXISTS logs (
   id_logs INT NOT NULL AUTO_INCREMENT,
-  email VARCHAR(255) NOT NULL,
-  id_kelas INT NOT NULL,
-  id_mapel INT NOT NULL,
-  id_module INT NOT NULL,
-  skor INT NOT NULL,
+  email VARCHAR(255) DEFAULT NULL,
+  id_kelas INT DEFAULT NULL,
+  id_mapel INT DEFAULT NULL,
+  id_module INT DEFAULT NULL,
+  skor INT DEFAULT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id_logs),
   KEY fk_logs_email (email),
   KEY fk_logs_module (id_module),
   KEY fk_logs_kelas (id_kelas),
   KEY fk_logs_mapel (id_mapel),
-  CONSTRAINT fk_logs_email FOREIGN KEY (email) REFERENCES siswa (email) ON DELETE CASCADE,
-  CONSTRAINT fk_logs_module FOREIGN KEY (id_module) REFERENCES modules (id_module) ON DELETE CASCADE,
-  CONSTRAINT fk_logs_kelas FOREIGN KEY (id_kelas) REFERENCES kelas (id_kelas) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT fk_logs_mapel FOREIGN KEY (id_mapel) REFERENCES mapel (id_mapel) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT fk_logs_email FOREIGN KEY (email) REFERENCES siswa (email) ON DELETE SET NULL,
+  CONSTRAINT fk_logs_module FOREIGN KEY (id_module) REFERENCES modules (id_module) ON DELETE SET NULL,
+  CONSTRAINT fk_logs_kelas FOREIGN KEY (id_kelas) REFERENCES kelas (id_kelas) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT fk_logs_mapel FOREIGN KEY (id_mapel) REFERENCES mapel (id_mapel) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- Tabel verifikasi user
@@ -166,15 +166,15 @@ CREATE TABLE IF NOT EXISTS user_points (
 -- Tabel data_siswa
 CREATE TABLE IF NOT EXISTS data_siswa (
   id_data INT NOT NULL AUTO_INCREMENT,
-  email VARCHAR(255) NOT NULL,
-  id_kelas INT NOT NULL,
+  email VARCHAR(255) DEFAULT NULL,
+  id_kelas INT DEFAULT NULL,
   progres JSON DEFAULT NULL,
   tahun_ajaran VARCHAR(50) NOT NULL,
   PRIMARY KEY (id_data),
   KEY fk_data_email (email),
   KEY fk_data_kelas (id_kelas),
-  CONSTRAINT fk_data_email FOREIGN KEY (email) REFERENCES siswa (email) ON DELETE CASCADE,
-  CONSTRAINT fk_data_kelas FOREIGN KEY (id_kelas) REFERENCES kelas (id_kelas) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT fk_data_email FOREIGN KEY (email) REFERENCES siswa (email) ON DELETE SET NULL,
+  CONSTRAINT fk_data_kelas FOREIGN KEY (id_kelas) REFERENCES kelas (id_kelas) ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 -- Tambahkan akun admin default

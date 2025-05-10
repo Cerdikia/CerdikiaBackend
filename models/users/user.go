@@ -75,7 +75,7 @@ type Guru struct {
 	ID           uint      `gorm:"primaryKey" json:"id"`
 	Email        string    `gorm:"type:varchar(100);unique;not null" json:"email"`
 	Nama         string    `gorm:"size:100;not null" json:"nama"`
-	Jabatan      *string   `gorm:"size:100" json:"jabatan,omitempty"` // nullable
+	Jabatan      string    `gorm:"size:100" json:"jabatan"` // nullable
 	DateCreated  time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"date_created"`
 	ImageProfile string    `json:"image_profile,omitempty" gorm:"type:text"`
 }
