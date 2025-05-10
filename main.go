@@ -136,6 +136,9 @@ func main() {
 	protected.POST("/barang", controllers.CreateBarang)
 	protected.PUT("/barang/:id", controllers.UpdateBarang)
 	protected.DELETE("/barang/:id", controllers.DeleteBarang)
+	
+	// New endpoint for gift creation with image upload
+	protected.POST("/gifts", controllers.CreateGift)
 
 	// =================== Tukara Point ====================================
 	// Route tukar barang

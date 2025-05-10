@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS barang (
   id_barang INT NOT NULL AUTO_INCREMENT,
   nama_barang TEXT,
   img TEXT,
+  description TEXT,
   diamond BIGINT DEFAULT NULL,
   jumlah BIGINT DEFAULT NULL,
   created_at DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
