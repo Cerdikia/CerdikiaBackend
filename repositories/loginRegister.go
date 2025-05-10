@@ -168,6 +168,8 @@ func GetUserByEmail(email, role string) (*users.UserProfile, string) {
 		query = `SELECT id, email, nama, NULL AS id_kelas, jabatan, NULL AS keterangan, date_created, image_profile FROM guru WHERE email = ?`
 	case "admin":
 		query = `SELECT email, nama, NULL AS id_kelas, NULL AS jabatan, keterangan, date_created, image_profile FROM admin WHERE email = ?`
+	case "kepalaSekolah":
+		query = `SELECT id, email, nama, NULL AS id_kelas, jabatan, NULL AS keterangan, date_created, image_profile FROM guru WHERE email = ? AND jabatan = 'kepala sekolah'`
 	default:
 		return nil, "error bad request"
 	}

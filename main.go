@@ -82,8 +82,8 @@ func main() {
 	protected.DELETE("/genericModules/:id", controllers.DeleteModule)
 	protected.GET("/genericModule/:id", controllers.GetModuleByID)
 	r.PUT("/togle-module/:id_module", controllers.ToggleModuleReady)
-	r.GET("/stats", controllers.GetStats) // Endpoint lama untuk kompatibilitas
-	r.GET("/all-stats", controllers.GetAllStats) // Endpoint baru yang menampilkan semua statistik
+	r.GET("/stats", controllers.GetStats)                        // Endpoint lama untuk kompatibilitas
+	r.GET("/all-stats", controllers.GetAllStats)                 // Endpoint baru yang menampilkan semua statistik
 	r.GET("/recent-activities", controllers.GetRecentActivities) // Endpoint untuk menampilkan aktivitas terakhir
 
 	// ========= SOAL ==============================
@@ -101,6 +101,7 @@ func main() {
 	protected.PUT("/editDataUser/:role", controllers.UpdateDataActor)
 	protected.DELETE("/deleteDataUser", controllers.DeleteDataActor)
 	protected.PATCH("/patchImageProfile/:role/:email", controllers.UpdateSiswaImageProfile)
+	protected.POST("/changeUserRole", controllers.ChangeUserRole)
 
 	// ========= Siawa Verified ===============
 	protected.GET("/verified", controllers.Beingverified)

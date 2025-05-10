@@ -15,15 +15,26 @@ func GetAllStats() stats.StatsResponse {
 	var statsResponse stats.StatsResponse
 
 	// Hitung total users (gabungan siswa, guru, admin)
+	// db.Raw(`
+	// 	SELECT
+	// 		COUNT(*) as total_users
+	// 	FROM (
+	// 		SELECT email FROM siswa
+	// 		UNION
+	// 		SELECT email FROM guru
+	// 		UNION
+	// 		SELECT email FROM admin
+	// 	) as all_users
+	// `).Scan(&statsResponse.TotalUsers)
 	db.Raw(`
 		SELECT 
 			COUNT(*) as total_users 
 		FROM (
-			SELECT email FROM siswa
-			UNION
-			SELECT email FROM guru
-			UNION
-			SELECT email FROM admin
+			SELECT email, nama, 'siswa' AS role, date_created, image_profile FROM siswa
+UNION
+SELECT email, nama, 'guru' AS role, date_created, image_profile FROM guru
+UNION
+SELECT email, nama, 'admin' AS role, date_created, image_profile FROM admin
 		) as all_users
 	`).Scan(&statsResponse.TotalUsers)
 

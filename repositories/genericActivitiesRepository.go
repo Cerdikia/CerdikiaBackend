@@ -47,6 +47,80 @@ ORDER BY
 	return genericActivities, fmt.Sprintf("Success")
 }
 
+func GetGenericActivitiesAllStatusKelas(c *gin.Context, kelas string) ([]genericactivities.GenericActivitiesResponse, string) {
+	var genericActivities []genericactivities.GenericActivitiesResponse
+	// var result models.BaseResponseModel
+
+	db := config.DB
+
+	query := `SELECT 
+    m.id_mapel,
+    mp.mapel AS nama_mapel,
+    kelas.kelas,
+    COUNT(*) AS jumlah_modul
+FROM 
+    modules m
+JOIN 
+    mapel mp ON m.id_mapel = mp.id_mapel
+JOIN 
+  kelas ON m.id_kelas = kelas.id_kelas
+WHERE 
+    m.id_kelas = ?
+GROUP BY 
+    m.id_mapel, mp.mapel, m.id_kelas
+ORDER BY 
+    m.id_mapel;`
+
+	tmpResult := db.Raw(query, kelas).Scan(&genericActivities)
+
+	if tmpResult.Error != nil {
+		fmt.Println(tmpResult.Error)
+		return nil, fmt.Sprintf("error fetching data : %e", tmpResult.Error)
+	}
+
+	if tmpResult.RowsAffected == 0 {
+		return nil, fmt.Sprintf("no data found, maybe wrong in query")
+	}
+
+	return genericActivities, fmt.Sprintf("Success")
+}
+
+func GetGenericActivitiesAllStatus(c *gin.Context) ([]genericactivities.GenericActivitiesResponse, string) {
+	var genericActivities []genericactivities.GenericActivitiesResponse
+	// var result models.BaseResponseModel
+
+	db := config.DB
+
+	query := `SELECT 
+    m.id_mapel,
+    mp.mapel AS nama_mapel,
+    kelas.kelas,
+    COUNT(*) AS jumlah_modul
+FROM 
+    modules m
+JOIN 
+    mapel mp ON m.id_mapel = mp.id_mapel
+JOIN 
+  kelas ON m.id_kelas = kelas.id_kelas
+GROUP BY 
+    m.id_mapel, mp.mapel, m.id_kelas
+ORDER BY 
+    m.id_mapel;`
+
+	tmpResult := db.Raw(query).Scan(&genericActivities)
+
+	if tmpResult.Error != nil {
+		fmt.Println(tmpResult.Error)
+		return nil, fmt.Sprintf("error fetching data : %e", tmpResult.Error)
+	}
+
+	if tmpResult.RowsAffected == 0 {
+		return nil, fmt.Sprintf("no data found, maybe wrong in query")
+	}
+
+	return genericActivities, fmt.Sprintf("Success")
+}
+
 func SpesifiedModulesKelas(c *gin.Context, email, kelas, mapel string, isFinished bool) ([]genericactivities.SpesifiedModulesKelasResponse, string) {
 	var genericActivities []genericactivities.SpesifiedModulesKelasResponse
 	// var result models.BaseResponseModel

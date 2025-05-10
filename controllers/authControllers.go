@@ -50,7 +50,8 @@ func LoginControler(c *gin.Context) {
 
 	// fmt.Println("email fromauth controller : " + userData.Email)
 
-	if userData.Role == "siswa" {
+	switch userData.Role {
+	case "siswa":
 		c.JSON(http.StatusOK, models.BaseResponseModel{
 			Message: "E-mail " + user.Email + " Successfuly Login",
 			Data: users.LoginResponse{
@@ -64,9 +65,7 @@ func LoginControler(c *gin.Context) {
 				AccessToken:  accessToken,
 				RefreshToken: refreshToken,
 			}})
-		return
-	}
-	if userData.Role == "guru" {
+	case "guru":
 		c.JSON(http.StatusOK, models.BaseResponseModel{
 			Message: "E-mail " + user.Email + " Successfuly Login",
 			Data: users.LoginResponse{
@@ -81,9 +80,22 @@ func LoginControler(c *gin.Context) {
 				AccessToken:  accessToken,
 				RefreshToken: refreshToken,
 			}})
-		return
-	}
-	if userData.Role == "admin" {
+	case "kepalaSekolah":
+		c.JSON(http.StatusOK, models.BaseResponseModel{
+			Message: "E-mail " + user.Email + " Successfuly Login",
+			Data: users.LoginResponse{
+				// MASUKIN DATA USER KE SINI !!!
+				Role:         userData.Role,
+				Email:        userData.Email,
+				Nama:         userData.Nama,
+				Jabatan:      userData.Jabatan,
+				IdMapel:      userData.IdMapel,
+				DateCreated:  userData.DateCreated,
+				ImageProfile: userData.ImageProfile,
+				AccessToken:  accessToken,
+				RefreshToken: refreshToken,
+			}})
+	case "admin":
 		c.JSON(http.StatusOK, models.BaseResponseModel{
 			Message: "E-mail " + user.Email + " Successfuly Login",
 			Data: users.LoginResponse{
@@ -97,7 +109,6 @@ func LoginControler(c *gin.Context) {
 				AccessToken:  accessToken,
 				RefreshToken: refreshToken,
 			}})
-		return
 	}
 }
 
