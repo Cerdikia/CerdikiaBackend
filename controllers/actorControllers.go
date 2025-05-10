@@ -66,7 +66,25 @@ func CreateUser(c *gin.Context) {
 			err = db.Create(&guru).Error
 			if err == nil {
 				c.JSON(201, gin.H{
-					"message": "User dengan nama " + guru.Nama + " berhasil dibuat",
+					"message": "User dengan email " + guru.Email + " berhasil dibuat",
+				})
+				return
+			}
+		}
+	case "kepalaSekolah":
+		var guru users.Guru
+		if err = c.ShouldBindJSON(&guru); err == nil {
+			if guru.ImageProfile == "" {
+				basuUrl := os.Getenv("BASEURL")
+				guru.ImageProfile = fmt.Sprintf("%s/uploads/default_user.png", basuUrl)
+			}
+
+			guru.Jabatan = "kepala sekolah"
+
+			err = db.Create(&guru).Error
+			if err == nil {
+				c.JSON(201, gin.H{
+					"message": "User dengan email " + guru.Email + " berhasil dibuat",
 				})
 				return
 			}
@@ -81,7 +99,7 @@ func CreateUser(c *gin.Context) {
 			err = db.Create(&admin).Error
 			if err == nil {
 				c.JSON(201, gin.H{
-					"message": "User dengan nama " + admin.Nama + " berhasil dibuat",
+					"message": "User dengan email " + admin.Email + " berhasil dibuat",
 				})
 				return
 			}

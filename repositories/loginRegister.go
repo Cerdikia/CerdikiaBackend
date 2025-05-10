@@ -44,7 +44,9 @@ func GetDataActor(role string) models.BaseResponseModel {
 	case "siswa":
 		query = `SELECT email, nama, id_kelas, date_created FROM siswa`
 	case "guru":
-		query = `SELECT id, email, nama, jabatan, date_created FROM guru`
+		query = `SELECT id, email, nama, jabatan, date_created FROM guru WHERE jabatan != 'kepala sekolah'`
+	case "kepalaSekolah":
+		query = `SELECT id, email, nama, jabatan, date_created FROM guru WHERE jabatan = 'kepala sekolah'`
 	case "admin":
 		query = `SELECT email, nama, keterangan, date_created FROM admin`
 	default:
@@ -87,11 +89,13 @@ func GetDataActorByRoleAndEmail(role, email string) models.BaseResponseModel {
 
 	switch role {
 	case "siswa":
-		query = `SELECT email, nama, id_kelas, date_created FROM siswa WHERE email = ?`
+		query = `SELECT email, nama, id_kelas, image_profile, date_created FROM siswa WHERE email = ?`
 	case "guru":
-		query = `SELECT id, email, nama, jabatan, date_created FROM guru WHERE email = ?`
+		query = `SELECT id, email, nama, jabatan, image_profile, date_created FROM guru WHERE email = ? AND jabatan != 'kepala sekolah'`
+	case "kepalaSekolah":
+		query = `SELECT id, email, nama, jabatan, image_profile, date_created FROM guru WHERE email = ? AND jabatan = 'kepala sekolah'`
 	case "admin":
-		query = `SELECT email, nama, keterangan, date_created FROM admin WHERE email = ?`
+		query = `SELECT email, nama, keterangan, image_profile, date_created FROM admin WHERE email = ?`
 	default:
 		result = models.BaseResponseModel{
 			Message: "undifine role",
@@ -131,7 +135,7 @@ func GetAllUsers() models.BaseResponseModel {
 	query :=
 		`SELECT email, nama, 'siswa' AS role, date_created, image_profile FROM siswa
 UNION
-SELECT email, nama, 'guru' AS role, date_created, image_profile FROM guru
+SELECT email, nama, CASE WHEN jabatan = 'kepala sekolah' THEN 'kepalaSekolah' ELSE 'guru' END AS role, date_created, image_profile FROM guru
 UNION
 SELECT email, nama, 'admin' AS role, date_created, image_profile FROM admin;`
 
