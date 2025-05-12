@@ -5,7 +5,6 @@ import (
 	"coba1BE/models"
 	"coba1BE/models/users"
 	"coba1BE/repositories"
-	"coba1BE/services"
 	"errors"
 	"fmt"
 	"net/http"
@@ -36,15 +35,16 @@ func Beingverifieds(c *gin.Context) {
 }
 
 func Beingverified(c *gin.Context) {
-	email, errmail := services.GetUserEmailFromToken(c)
-	if errmail != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error di adminContollrs": errmail.Error()})
-		return
-	}
+	email := c.Query("email")
+	// email, errmail := services.GetUserEmailFromToken(c)
+	// if errmail != nil {
+	// 	c.JSON(http.StatusUnauthorized, gin.H{"error di adminContollrs": errmail.Error()})
+	// 	return
+	// }
 	fmt.Println(email)
 
 	// chek apakah parameter di isi
-	if email == "" {
+	if email == "" || email == " " {
 		c.JSON(http.StatusBadRequest, models.BaseResponseModel{
 			Message: "no parmeter found",
 			Data:    nil,

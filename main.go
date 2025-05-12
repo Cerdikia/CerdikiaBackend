@@ -157,7 +157,7 @@ func main() {
 	// r.DELETE("/:id", controllers.DeleteLog)
 	protected.GET("/logs", controllers.GetLogsBydEmailWithToken) // get logs where token email
 	protected.GET("/logsBy", controllers.GetLogsBy)              // GET /logs/email/john@example.com/module/2
-	r.GET("/logs-periode", controllers.GetLogsByPeriod)
+	protected.GET("/logs-periode", controllers.GetLogsByPeriod)
 
 	// =================== Rekap Smester ====================================
 	protected.POST("/rekap-semester", controllers.RekapSemester)
