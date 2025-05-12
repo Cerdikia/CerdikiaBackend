@@ -136,6 +136,7 @@ CREATE TABLE IF NOT EXISTS logs (
   id_module INT DEFAULT NULL,
   skor INT DEFAULT NULL,
   created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id_logs),
   KEY fk_logs_email (email),
   KEY fk_logs_module (id_module),
@@ -150,9 +151,22 @@ CREATE TABLE IF NOT EXISTS logs (
 -- Tabel verifikasi user
 CREATE TABLE IF NOT EXISTS user_verified (
   email VARCHAR(100) NOT NULL,
-  verified TINYINT(1) DEFAULT 0,
+  verified_status ENUM('accept', 'rejected', 'waiting') DEFAULT 'waiting',
   PRIMARY KEY (email),
   CONSTRAINT fk_verified_siswa FOREIGN KEY (email) REFERENCES siswa (email) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Tabel chat
+CREATE TABLE IF NOT EXISTS chat (
+  id_message INT AUTO_INCREMENT PRIMARY KEY,
+  form VARCHAR(100),
+  entity ENUM('personal', 'role') NOT NULL,
+  dest VARCHAR(100) NOT NULL, 
+  subject VARCHAR(255), 
+  message TEXT NOT NULL,
+  status ENUM('mengirim', 'terkirim', 'dibaca') DEFAULT 'mengirim',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 -- Tabel poin user

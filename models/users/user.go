@@ -128,8 +128,8 @@ func (Admin) TableName() string {
 }
 
 type UserVerified struct {
-	Email    string `gorm:"primaryKey;size:100;not null"`
-	Verified bool   `gorm:"default:false"`
+	Email            string `gorm:"primaryKey;size:100;not null"`
+	VerifiedStatus   string `gorm:"column:verified_status;type:ENUM('accept', 'rejected', 'waiting');default:'waiting'"`
 }
 
 // TableName memberikan nama tabel yang eksplisit
