@@ -270,7 +270,8 @@ func CreatePointFirst(email string) error {
 
 func CreateAcountVerifiedFirst(email string) error {
 	userVerivied := users.UserVerified{
-		Email: email,
+		Email:          email,
+		VerifiedStatus: "waiting",
 	}
 	db := config.DB
 	err := db.Create(&userVerivied).Error

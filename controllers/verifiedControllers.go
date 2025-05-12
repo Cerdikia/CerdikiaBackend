@@ -26,6 +26,7 @@ func Beingverifieds(c *gin.Context) {
 		})
 		return
 	} else {
+		fmt.Println(message)
 		c.JSON(http.StatusBadRequest, models.BaseResponseModel{
 			Message: message,
 			Data:    nil,
@@ -79,10 +80,18 @@ func Beingverified(c *gin.Context) {
 }
 
 func UpdateUserVerifiedBatch(c *gin.Context) {
-	var input []users.UserVerified
+	type VerificationRequest struct {
+		Students []struct {
+			Email              string `json:"email"`
+			VerificationStatus string `json:"verification_status"`
+		} `json:"students"`
+	}
+
+	var request VerificationRequest
 	db := config.DB
 
-	if err := c.ShouldBindJSON(&input); err != nil {
+	if err := c.ShouldBindJSON(&request); err != nil {
+		fmt.Println(err.Error())
 		c.JSON(http.StatusBadRequest, models.BaseResponseModel{
 			Message: err.Error(),
 			Data:    nil,
@@ -90,46 +99,94 @@ func UpdateUserVerifiedBatch(c *gin.Context) {
 		return
 	}
 
-	for _, item := range input {
+	fmt.Println("student.Email : " + request.Students[0].Email)
+	fmt.Println("student.VerificationStatus : " + request.Students[0].VerificationStatus)
+
+	var updatedStudents []map[string]any
+
+	for _, student := range request.Students {
 		var existing users.UserVerified
 
-		// Cek apakah datanya ada
-		err := db.First(&existing, "email = ?", item.Email).Error
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			// Data tidak ditemukan
-			c.JSON(http.StatusNotFound, models.BaseResponseModel{
-				Message: fmt.Sprintf("User not found: %s", item.Email),
+		// Validate verification status
+		if student.VerificationStatus != "accept" && student.VerificationStatus != "rejected" && student.VerificationStatus != "waiting" {
+			fmt.Println("Validate verification status error")
+			fmt.Println("Validate status : " + student.VerificationStatus)
+			c.JSON(http.StatusBadRequest, models.BaseResponseModel{
+				Message: fmt.Sprintf("Invalid verification status for student %s: %s. Must be 'accept', 'rejected', or 'waiting'", student.Email, student.VerificationStatus),
 				Data:    nil,
 			})
-			return
-		} else if err != nil {
-			// Error lain
-			c.JSON(http.StatusInternalServerError, models.BaseResponseModel{
-				Message: fmt.Sprintf("User not found: %s", item.Email),
-				Data:    nil,
-			})
-			// c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error: " + err.Error()})
 			return
 		}
 
-		// Kalau ditemukan, baru cek perlu update atau tidak
-		if existing.Verified != item.Verified {
+		// Check if the student exists in the verified table
+		err := db.First(&existing, "email = ?", student.Email).Error
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// If not found, check if the student exists in the siswa table
+			var siswa struct {
+				Email string
+			}
+			err = db.Table("siswa").Where("email = ?", student.Email).First(&siswa).Error
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				c.JSON(http.StatusNotFound, models.BaseResponseModel{
+					Message: fmt.Sprintf("Student not found: %s", student.Email),
+					Data:    nil,
+				})
+				return
+			} else if err != nil {
+				c.JSON(http.StatusInternalServerError, models.BaseResponseModel{
+					Message: fmt.Sprintf("Database error: %s", err.Error()),
+					Data:    nil,
+				})
+				return
+			}
+
+			// Create new verification record
+			newVerification := users.UserVerified{
+				Email:          student.Email,
+				VerifiedStatus: student.VerificationStatus,
+			}
+			err = db.Create(&newVerification).Error
+			if err != nil {
+				fmt.Println("Create new verification record error")
+				c.JSON(http.StatusInternalServerError, models.BaseResponseModel{
+					Message: fmt.Sprintf("Failed to create verification record: %s", err.Error()),
+					Data:    nil,
+				})
+				return
+			}
+		} else if err != nil {
+			// Other database error
+			c.JSON(http.StatusInternalServerError, models.BaseResponseModel{
+				Message: fmt.Sprintf("Database error: %s", err.Error()),
+				Data:    nil,
+			})
+			return
+		} else {
+			// Update existing record
+			fmt.Println("student.Email : " + student.Email)
+			fmt.Println("student.VerificationStatus : " + student.VerificationStatus)
 			err := db.Model(&users.UserVerified{}).
-				Where("email = ?", item.Email).
-				Update("verified", item.Verified).Error
+				Where("email = ?", student.Email).
+				Update("verified_status", student.VerificationStatus).Error
 
 			if err != nil {
 				c.JSON(http.StatusInternalServerError, models.BaseResponseModel{
-					Message: fmt.Sprintf("Failed to update: %s", item.Email),
+					Message: fmt.Sprintf("Failed to update: %s", err.Error()),
 					Data:    nil,
 				})
 				return
 			}
 		}
+
+		// Add to updated students list
+		updatedStudents = append(updatedStudents, map[string]any{
+			"email":           student.Email,
+			"verified_status": student.VerificationStatus,
+		})
 	}
 
 	c.JSON(http.StatusOK, models.BaseResponseModel{
-		Message: "Update successful",
-		Data:    input,
+		Message: "Verification status updated successfully",
+		Data:    updatedStudents,
 	})
 }

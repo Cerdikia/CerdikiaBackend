@@ -27,27 +27,27 @@ services:
       - mynetwork
       # - tunnel
 
-  app:
-    build: .
-    container_name: kp-golang-mysql2-container
-    restart: always
-    depends_on:
-      # - mysql
-      mysql:
-        condition: service_healthy
-    environment:
-      DB_HOST: mysql
-      DB_PORT: ${DB_PORT}
-      DB_USER: ${MYSQL_USER}
-      DB_PASSWORD: ${MYSQL_PASSWORD}
-      DB_NAME: ${MYSQL_DATABASE}
-    ports:
-      - "80:80"
-    volumes:
-    - ./uploads:/app/uploads
-    networks:
-      - mynetwork
-      # - tunnel
+  # app:
+  #   build: .
+  #   container_name: kp-golang-mysql2-container
+  #   restart: always
+  #   depends_on:
+  #     # - mysql
+  #     mysql:
+  #       condition: service_healthy
+  #   environment:
+  #     DB_HOST: mysql
+  #     DB_PORT: ${DB_PORT}
+  #     DB_USER: ${MYSQL_USER}
+  #     DB_PASSWORD: ${MYSQL_PASSWORD}
+  #     DB_NAME: ${MYSQL_DATABASE}
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #   - ./uploads:/app/uploads
+  #   networks:
+  #     - mynetwork
+  #     # - tunnel
 
   migrate:
     image: migrate/migrate

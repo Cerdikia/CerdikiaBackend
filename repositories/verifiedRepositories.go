@@ -11,7 +11,7 @@ func GetSiswaBeingVerified() (*[]users.UserVerified, string) {
 
 	db := config.DB
 	query :=
-		`SELECT email, verified FROM user_verified;`
+		`SELECT email, verified_status FROM user_verified;`
 
 	tmpResult := db.Raw(query).Scan(&beingverifiedAcout)
 
@@ -28,7 +28,7 @@ func GetSiswaBeingVerifiedByEmail(email string) (*users.UserVerified, string) {
 
 	db := config.DB
 	query :=
-		`SELECT email, verified FROM user_verified WHERE email = ?;`
+		`SELECT email, verified_status FROM user_verified WHERE email = ?;`
 
 	tmpResult := db.Raw(query, email).Scan(&beingverifiedAcout)
 

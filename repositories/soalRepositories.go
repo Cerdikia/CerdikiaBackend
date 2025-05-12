@@ -25,7 +25,7 @@ func ReciveAndStoreImage(c *gin.Context) (url *soal.UploadImageResponse, mesage 
 	if err != nil {
 		fmt.Println("Gagal upload file:")
 		// c.JSON(http.StatusBadRequest, gin.H{"error": "Gagal upload file: " + err.Error()})
-		return nil, fmt.Sprintf("error : %e", err.Error)
+		return nil, fmt.Sprintf("error : %s", err.Error())
 	}
 
 	// Tambahan: cek apakah file benar-benar di bawah 2MB (opsional karena sudah dibatasi di atas)
@@ -80,7 +80,7 @@ func ReciveAndStoreSoal(c *gin.Context) (*soal.UploadSoal, string) {
 	if err := db.Create(&req).Error; err != nil {
 		fmt.Println("Gagal menyimpan ke database")
 		// c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan ke database"})
-		return nil, fmt.Sprintf("gagal menyimpan ke database : %e", err.Error())
+		return nil, fmt.Sprintf("gagal menyimpan ke database : %s", err.Error())
 	}
 
 	return &req, "Success"

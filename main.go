@@ -104,12 +104,12 @@ func main() {
 	protected.POST("/changeUserRole", controllers.ChangeUserRole)
 
 	// ========= Siawa Verified ===============
-	protected.GET("/verified", controllers.Beingverified)
-	protected.GET("/verifiedes", controllers.Beingverifieds)
-	protected.PATCH("/verifiedes", controllers.UpdateUserVerifiedBatch)
+	r.GET("/verified", controllers.Beingverified)
+	r.GET("/verifiedes", controllers.Beingverifieds)
+	r.PATCH("/verifiedes", controllers.UpdateUserVerifiedBatch)
 
 	// ========= Soal ===============
-	protected.POST("/upload-image", controllers.UploadImage)
+	r.POST("/upload-image", controllers.UploadImage)
 	protected.POST("/upload-soal", controllers.UploadSoal)
 	// if strings.Contains(strings.ToLower(message), "success") {
 	protected.GET("/getDataSoal/:id_soal", controllers.GetDataSoal)
@@ -181,6 +181,18 @@ func main() {
 	protected.GET("/user-energy/:email", controllers.GetUserEnergy)
 	protected.POST("/user-energy/:email", controllers.UseEnergyForAll)
 	protected.POST("/add-energy/:email", controllers.AddEnergyForAll)
+
+	// =================== CHAT/MESSAGES ENDPOINTS ====================================
+	protected.POST("/messages", controllers.CreateMessages)
+	protected.GET("/messages", controllers.GetAllMessages) // New endpoint with query filtering
+	protected.GET("/messages/recipient/:dest", controllers.GetMessagesByRecipient)
+	protected.GET("/messages/sender/:form", controllers.GetMessagesBySender)
+	protected.GET("/messages/subject/:subject", controllers.GetMessagesBySubject)
+	protected.GET("/messages/unread/count", controllers.CountUnreadMessages)             // Count unread messages for a user
+	protected.GET("/messages/unread/count/all", controllers.CountAllUnreadMessagesAdmin) // Count all unread messages for admin
+	protected.GET("/messages/:id", controllers.GetChatMessageByIDAndMarkAsRead)          // Get message by ID and mark as read
+	protected.PATCH("/messages/:id/status", controllers.UpdateMessageStatus)
+	protected.POST("/messages/:id/read", controllers.MarkMessageAsRead) // New endpoint to mark messages as read
 
 	// Menutup koneksi database saat aplikasi berhenti
 	sqlDB, err := db.DB()
