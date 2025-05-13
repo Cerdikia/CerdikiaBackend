@@ -81,10 +81,10 @@ func main() {
 	protected.PUT("/genericModules/:id", controllers.UpdateModule)
 	protected.DELETE("/genericModules/:id", controllers.DeleteModule)
 	protected.GET("/genericModule/:id", controllers.GetModuleByID)
-	r.PUT("/togle-module/:id_module", controllers.ToggleModuleReady)
-	r.GET("/stats", controllers.GetStats)                        // Endpoint lama untuk kompatibilitas
-	r.GET("/all-stats", controllers.GetAllStats)                 // Endpoint baru yang menampilkan semua statistik
-	r.GET("/recent-activities", controllers.GetRecentActivities) // Endpoint untuk menampilkan aktivitas terakhir
+	protected.PUT("/togle-module/:id_module", controllers.ToggleModuleReady)
+	protected.GET("/stats", controllers.GetStats)                        // Endpoint lama untuk kompatibilitas
+	protected.GET("/all-stats", controllers.GetAllStats)                 // Endpoint baru yang menampilkan semua statistik
+	protected.GET("/recent-activities", controllers.GetRecentActivities) // Endpoint untuk menampilkan aktivitas terakhir
 
 	// ========= SOAL ==============================
 	protected.GET("/genericSoal/:id_module", controllers.CGenericSoal) // ambil soal dari sebuah module dengan acuan id_module
@@ -104,12 +104,12 @@ func main() {
 	protected.POST("/changeUserRole", controllers.ChangeUserRole)
 
 	// ========= Siawa Verified ===============
-	r.GET("/verified", controllers.Beingverified)
-	r.GET("/verifiedes", controllers.Beingverifieds)
-	r.PATCH("/verifiedes", controllers.UpdateUserVerifiedBatch)
+	protected.GET("/verified", controllers.Beingverified)
+	protected.GET("/verifiedes", controllers.Beingverifieds)
+	protected.PATCH("/verifiedes", controllers.UpdateUserVerifiedBatch)
 
 	// ========= Soal ===============
-	r.POST("/upload-image", controllers.UploadImage)
+	protected.POST("/upload-image", controllers.UploadImage)
 	protected.POST("/upload-soal", controllers.UploadSoal)
 	// if strings.Contains(strings.ToLower(message), "success") {
 	protected.GET("/getDataSoal/:id_soal", controllers.GetDataSoal)
@@ -124,7 +124,7 @@ func main() {
 	// get all ranking
 	// protected.GET("/ranking", controllers.GetRanking)
 	// get ranking kelas
-	r.GET("/ranking", controllers.GetRankingByKelas)
+	protected.GET("/ranking", controllers.GetRankingByKelas)
 
 	// mbil status module udah di kerjain atau belum
 	// r.GET("/modules", controllers.GetModulesWithCompletion)
@@ -138,11 +138,11 @@ func main() {
 	// protected.DELETE("/barang/:id", controllers.DeleteBarang)
 
 	// Endpoints for gift management with image upload
-	r.POST("/gifts", controllers.CreateGift)
-	r.GET("/gifts", controllers.GetAllGifts)
-	r.GET("/gifts/:id", controllers.GetGiftByID)
-	r.PUT("/gifts/:id", controllers.UpdateGift)
-	r.DELETE("/gifts/:id", controllers.DeleteGift)
+	protected.POST("/gifts", controllers.CreateGift)
+	protected.GET("/gifts", controllers.GetAllGifts)
+	protected.GET("/gifts/:id", controllers.GetGiftByID)
+	protected.PUT("/gifts/:id", controllers.UpdateGift)
+	protected.DELETE("/gifts/:id", controllers.DeleteGift)
 
 	// =================== Tukara Point ====================================
 	// Route tukar barang
@@ -185,12 +185,22 @@ func main() {
 	protected.POST("/user-energy/:email", controllers.UseEnergyForAll)
 	protected.POST("/add-energy/:email", controllers.AddEnergyForAll)
 
+	// =================== GIFT REDEMPTION ====================================
+	protected.POST("/redeem-gifts", controllers.RedeemGifts)
+	protected.GET("/redemptions", controllers.GetAllRedemptions)
+	protected.GET("/redemptions/:id", controllers.GetRedemptionByID)
+	protected.GET("/redemptions/code/:code", controllers.GetRedemptionByCode)
+	protected.PUT("/redemptions/:id/status", controllers.UpdateRedemptionStatus)
+	protected.DELETE("/redemptions/:id", controllers.DeleteRedemption)
+	protected.GET("/view-receipt/:code", controllers.GetRedemptionReceipt)
+	protected.GET("/print-receipt/:code", controllers.PrintRedemptionReceipt)
+
 	// =================== LAPORAN NILAI ====================================
-	r.GET("/score-report", controllers.GetScoreReport)
-	r.GET("/score-report-summary", controllers.GetScoreReportSummary)
-	r.GET("/student-score-comparison", controllers.GetStudentScoreComparison)
-	r.GET("/score-progress", controllers.GetScoreProgress)
-	r.GET("/all-students-report", controllers.GetAllStudentsReport)
+	protected.GET("/score-report", controllers.GetScoreReport)
+	protected.GET("/score-report-summary", controllers.GetScoreReportSummary)
+	protected.GET("/student-score-comparison", controllers.GetStudentScoreComparison)
+	protected.GET("/score-progress", controllers.GetScoreProgress)
+	protected.GET("/all-students-report", controllers.GetAllStudentsReport)
 
 	// =================== CHAT/MESSAGES ENDPOINTS ====================================
 	protected.POST("/messages", controllers.CreateMessages)

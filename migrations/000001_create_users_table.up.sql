@@ -62,6 +62,8 @@ CREATE TABLE IF NOT EXISTS logs_penukaran_point (
   email VARCHAR(100) NOT NULL,
   jumlah INT NOT NULL,
   tanggal_penukaran DATETIME DEFAULT CURRENT_TIMESTAMP,
+  kode_penukaran VARCHAR(12) NOT NULL UNIQUE,
+  status_penukaran ENUM('menunggu', 'selesai', 'dibatalkan') NOT NULL DEFAULT 'menunggu',
   PRIMARY KEY (id_log),
   KEY fk_logs_barang (id_barang),
   KEY fk_logs_siswa (email),
