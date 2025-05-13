@@ -16,6 +16,11 @@ type Log struct {
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at"`
 }
 
+// Optional: Jika kamu ingin GORM tahu nama tabelnya secara eksplisit
+func (Log) TableName() string {
+	return "logs"
+}
+
 type ProgresItem struct {
 	IDMapel   int    `json:"id_mapel"`
 	IDModule  int    `json:"id_module"`

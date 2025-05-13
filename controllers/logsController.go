@@ -375,37 +375,29 @@ func GetLogsByPeriod(c *gin.Context) {
 
 	period := c.Query("periode") // contoh: "today", "week", "month", "semester", "year"
 	now := time.Now()
-	var start, end time.Time
+	end := now // End time is always the current time
+	var start time.Time
 
 	switch period {
 	case "today":
-		start = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
-		end = start.Add(24 * time.Hour)
+		// Today: from current time to 24 hours before
+		start = now.Add(-24 * time.Hour)
 
 	case "week":
-		weekday := int(now.Weekday())
-		if weekday == 0 { // Minggu
-			weekday = 7
-		}
-		start = time.Date(now.Year(), now.Month(), now.Day()-weekday+1, 0, 0, 0, 0, now.Location())
-		end = start.AddDate(0, 0, 7)
+		// Week: from current time to 7 days before
+		start = now.AddDate(0, 0, -7)
 
 	case "month":
-		start = time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, now.Location())
-		end = start.AddDate(0, 1, 0)
+		// Month: from current time to 30 days before
+		start = now.AddDate(0, 0, -30)
 
 	case "semester":
-		if now.Month() <= 6 {
-			start = time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location())
-			end = time.Date(now.Year(), 7, 1, 0, 0, 0, 0, now.Location())
-		} else {
-			start = time.Date(now.Year(), 7, 1, 0, 0, 0, 0, now.Location())
-			end = time.Date(now.Year()+1, 1, 1, 0, 0, 0, 0, now.Location())
-		}
+		// Semester: from current time to 6 months before
+		start = now.AddDate(0, -6, 0)
 
 	case "year":
-		start = time.Date(now.Year(), 1, 1, 0, 0, 0, 0, now.Location())
-		end = time.Date(now.Year()+1, 1, 1, 0, 0, 0, 0, now.Location())
+		// Year: from current time to 1 year before
+		start = now.AddDate(-1, 0, 0)
 
 	default:
 		c.JSON(http.StatusBadRequest, gin.H{
