@@ -91,12 +91,6 @@ func GetRedemptionReceipt(c *gin.Context) {
 	<head>
 		<title>Bukti Penukaran - %s</title>
 		<style>
-			body {
-				font-family: Arial, sans-serif;
-				margin: 0;
-				padding: 20px;
-				background-color: #f5f5f5;
-			}
 			.receipt {
 				max-width: 800px;
 				margin: 0 auto;
