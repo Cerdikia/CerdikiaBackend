@@ -124,7 +124,7 @@ func main() {
 	// get all ranking
 	// protected.GET("/ranking", controllers.GetRanking)
 	// get ranking kelas
-	protected.GET("/ranking", controllers.GetRankingByKelas)
+	r.GET("/ranking", controllers.GetRankingByKelas)
 
 	// mbil status module udah di kerjain atau belum
 	// r.GET("/modules", controllers.GetModulesWithCompletion)
@@ -161,6 +161,9 @@ func main() {
 
 	// =================== Rekap Smester ====================================
 	protected.POST("/rekap-semester", controllers.RekapSemester)
+	protected.POST("/rekap-semester-siswa", controllers.RekapSemesterSiswa)
+	protected.POST("/rekap-semester-all-siswa", controllers.RekapSemesterAllSiswa)
+	protected.GET("/test-logs", controllers.TestLogsRetrieval) // Test endpoint for debugging logs retrieval
 	protected.POST("/edit-tahun-ajaran", controllers.EditTahunAjaran)
 	protected.GET("/rekap-semester-all", controllers.GetAllDataSiswa)
 	protected.GET("/rekap-semester/:id_data", controllers.GetDataSiswa)
@@ -181,6 +184,13 @@ func main() {
 	protected.GET("/user-energy/:email", controllers.GetUserEnergy)
 	protected.POST("/user-energy/:email", controllers.UseEnergyForAll)
 	protected.POST("/add-energy/:email", controllers.AddEnergyForAll)
+
+	// =================== LAPORAN NILAI ====================================
+	r.GET("/score-report", controllers.GetScoreReport)
+	r.GET("/score-report-summary", controllers.GetScoreReportSummary)
+	r.GET("/student-score-comparison", controllers.GetStudentScoreComparison)
+	r.GET("/score-progress", controllers.GetScoreProgress)
+	r.GET("/all-students-report", controllers.GetAllStudentsReport)
 
 	// =================== CHAT/MESSAGES ENDPOINTS ====================================
 	protected.POST("/messages", controllers.CreateMessages)
