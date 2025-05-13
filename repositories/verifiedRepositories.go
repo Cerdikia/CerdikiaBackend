@@ -45,7 +45,7 @@ func GetSiswaBeingVerifiedByEmail(email string) (*users.VerifiedUserResponse, st
 			uv.verified_status, 
 			s.nama, 
 			s.id_kelas,
-			k.nama_kelas
+			k.kelas
 		FROM 
 			user_verified uv
 		LEFT JOIN 
