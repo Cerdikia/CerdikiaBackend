@@ -4,6 +4,7 @@ import (
 	"coba1BE/config"
 	"coba1BE/models/users"
 	"fmt"
+	"strings"
 )
 
 // ChangeUserRole changes a user's role by moving their data between tables
@@ -148,6 +149,27 @@ func ChangeUserRole(email string, oldRole, newRole string) (*users.UserProfile, 
 
 	// Update the role in the response
 	userProfile.Role = newRole
+
+	// If the new role is siswa, create the necessary default records
+	if newRole == "siswa" {
+		// Create initial points for the student
+		errPoint := CreatePointFirst(email)
+		if errPoint != nil {
+			return &userProfile, fmt.Sprintf("Role changed successfully, but failed to create initial points: %v", errPoint)
+		}
+
+		// Create account verification record
+		errVerified := CreateAcountVerifiedFirst(email)
+		if errVerified != nil {
+			return &userProfile, fmt.Sprintf("Role changed successfully, but failed to create verification record: %v", errVerified)
+		}
+
+		// Create initial energy for the student
+		message := CreateUserEnergyFirstTime(email)
+		if !strings.Contains(strings.ToLower(message), "success") {
+			return &userProfile, fmt.Sprintf("Role changed successfully, but failed to create initial energy: %s", message)
+		}
+	}
 
 	return &userProfile, "Role changed successfully"
 }

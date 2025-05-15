@@ -92,6 +92,13 @@ func main() {
 	// ========= Guru - Mapel Relasi ===============
 	protected.GET("/guru/:id_guru", controllers.GetMapelByGuru)
 	protected.POST("/guru_mapel", controllers.AddGuruMapel)
+	protected.PUT("/guru_mapel", controllers.UpdateGuruMapel)
+	protected.DELETE("/guru_mapel/:id_guru/:id_mapel", controllers.DeleteGuruMapel)
+	protected.DELETE("/guru_mapel/:id_guru", controllers.DeleteAllGuruMapel)
+	// Batch operations for multiple teachers at once
+	protected.POST("/guru_mapel/batch", controllers.BatchAddGuruMapel)
+	protected.PUT("/guru_mapel/batch", controllers.BatchUpdateGuruMapel)
+	protected.DELETE("/guru_mapel/batch", controllers.BatchDeleteGuruMapel)
 
 	// ========= Actor ===============
 	protected.GET("/getAllUsers", controllers.GetUsers)

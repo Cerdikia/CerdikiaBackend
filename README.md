@@ -71,7 +71,7 @@ API ini digunakan untuk manajemen pengguna, autentikasi, serta akses data pembel
   {
     "email": "user123@gmail.com",
     "nama": "myname",
-    "kelas": "3"
+    "id_kelas": 3
   }
   ```
 
