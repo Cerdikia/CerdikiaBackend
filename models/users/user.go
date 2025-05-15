@@ -75,7 +75,7 @@ type Guru struct {
 	ID           uint      `gorm:"primaryKey" json:"id"`
 	Email        string    `gorm:"type:varchar(100);unique;not null" json:"email"`
 	Nama         string    `gorm:"size:100;not null" json:"nama"`
-	Jabatan      string    `gorm:"size:100" json:"jabatan"` // nullable
+	Jabatan      string    `gorm:"type:varchar(100);not null;default:'guru'" json:"jabatan"`
 	DateCreated  time.Time `gorm:"default:CURRENT_TIMESTAMP" json:"date_created"`
 	ImageProfile string    `json:"image_profile,omitempty" gorm:"type:text"`
 }
@@ -128,8 +128,8 @@ func (Admin) TableName() string {
 }
 
 type UserVerified struct {
-	Email            string `gorm:"primaryKey;size:100;not null"`
-	VerifiedStatus   string `gorm:"column:verified_status;type:ENUM('accept', 'rejected', 'waiting');default:'waiting'"`
+	Email          string `gorm:"primaryKey;size:100;not null"`
+	VerifiedStatus string `gorm:"column:verified_status;type:ENUM('accept', 'rejected', 'waiting');default:'waiting'"`
 }
 
 // TableName memberikan nama tabel yang eksplisit
