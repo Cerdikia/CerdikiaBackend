@@ -23,6 +23,7 @@ zunks/
 zunks/insert.sql
 
 uploads/
+tmp/
 
 controllers/adminControllersCopy
 migrate.exe
