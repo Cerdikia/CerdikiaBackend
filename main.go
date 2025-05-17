@@ -32,6 +32,7 @@ func main() {
 	r := gin.Default()
 
 	r.Static("/uploads", "./uploads")
+	r.Static("/tmp", "./tmp")
 
 	// Atur middleware CORS
 	r.Use(cors.New(cors.Config{
@@ -220,6 +221,9 @@ func main() {
 	protected.GET("/messages/:id", controllers.GetChatMessageByIDAndMarkAsRead)          // Get message by ID and mark as read
 	protected.PATCH("/messages/:id/status", controllers.UpdateMessageStatus)
 	protected.POST("/messages/:id/read", controllers.MarkMessageAsRead) // New endpoint to mark messages as read
+
+	// =================== IMPORT SOAL ================================================
+	r.POST("/import", controllers.ImportSoalHandler)
 
 	// Menutup koneksi database saat aplikasi berhenti
 	sqlDB, err := db.DB()
