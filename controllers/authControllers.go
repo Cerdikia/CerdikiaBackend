@@ -70,6 +70,7 @@ func LoginControler(c *gin.Context) {
 			Message: "E-mail " + user.Email + " Successfuly Login",
 			Data: users.LoginResponse{
 				// MASUKIN DATA USER KE SINI !!!
+				ID:           userData.ID,
 				Role:         userData.Role,
 				Email:        userData.Email,
 				Nama:         userData.Nama,
@@ -85,6 +86,7 @@ func LoginControler(c *gin.Context) {
 			Message: "E-mail " + user.Email + " Successfuly Login",
 			Data: users.LoginResponse{
 				// MASUKIN DATA USER KE SINI !!!
+				ID:           userData.ID,
 				Role:         userData.Role,
 				Email:        userData.Email,
 				Nama:         userData.Nama,

@@ -224,6 +224,7 @@ func main() {
 
 	// =================== IMPORT SOAL ================================================
 	r.POST("/import", controllers.ImportSoalHandler)
+	r.POST("/save-imported-data", controllers.SaveImportedDataHandler)
 
 	// Menutup koneksi database saat aplikasi berhenti
 	sqlDB, err := db.DB()

@@ -53,6 +53,7 @@ type LoginRequest struct {
 }
 
 type LoginResponse struct {
+	ID           *int    `json:"id,omitempty"`       // optional, for guru and kepalaSekolah
 	Email        string  `json:"email"`
 	Nama         string  `json:"nama"`
 	Role         string  `json:"role"`               // siswa/guru/admin
