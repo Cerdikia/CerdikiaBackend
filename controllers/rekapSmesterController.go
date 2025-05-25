@@ -442,28 +442,30 @@ func GetAllDataSiswa(c *gin.Context) {
 	tahunAjaran := c.Query("tahun_ajaran")
 	idKelas := c.Query("id_kelas")
 	email := c.Query("email")
-	
+
 	// Debug: Log the request parameters
 	fmt.Println("GetAllDataSiswa request params - tahunAjaran:", tahunAjaran, "idKelas:", idKelas, "email:", email)
 
 	// Struktur untuk menyimpan data siswa
 	type DataSiswaResponse struct {
-		IDData      uint   `json:"id_data" gorm:"column:id_data"`
-		Email       string `json:"email" gorm:"column:email"`
-		IDKelas     int    `json:"id_kelas" gorm:"column:id_kelas"`
-		Kelas       string `json:"kelas" gorm:"column:kelas"`
-		NamaSiswa   string `json:"nama_siswa" gorm:"column:nama_siswa"`
-		Progres     string `json:"progres" gorm:"column:progres"`
-		TahunAjaran string `json:"tahun_ajaran" gorm:"column:tahun_ajaran"`
+		IDData      uint      `json:"id_data" gorm:"column:id_data"`
+		Email       string    `json:"email" gorm:"column:email"`
+		IDKelas     int       `json:"id_kelas" gorm:"column:id_kelas"`
+		Kelas       string    `json:"kelas" gorm:"column:kelas"`
+		NamaSiswa   string    `json:"nama_siswa" gorm:"column:nama_siswa"`
+		Progres     string    `json:"progres" gorm:"column:progres"`
+		TahunAjaran string    `json:"tahun_ajaran" gorm:"column:tahun_ajaran"`
+		CreatedAt   time.Time `json:"created_at" gorm:"column:created_at"`
+		Semester    string    `json:"semester" form:"semester"`
 		// CreatedAt field removed as it doesn't exist in the data_siswa table
 	}
 
 	// Membuat query dasar dengan join ke tabel siswa dan kelas untuk mendapatkan informasi tambahan
 	query := db.Table("data_siswa ds").
-		Select("ds.id_data, ds.email, ds.id_kelas, k.kelas, s.nama as nama_siswa, ds.progres, ds.tahun_ajaran").
+		Select("ds.id_data, ds.email, ds.id_kelas, k.kelas, s.nama as nama_siswa, ds.progres, ds.tahun_ajaran, ds.created_at, ds.semester").
 		Joins("LEFT JOIN siswa s ON ds.email = s.email").
 		Joins("LEFT JOIN kelas k ON ds.id_kelas = k.id_kelas")
-	
+
 	// Debug: Count total records before applying filters
 	var totalCount int64
 	if err := db.Table("data_siswa").Count(&totalCount).Error; err != nil {
@@ -525,6 +527,8 @@ func GetAllDataSiswa(c *gin.Context) {
 				"nama_siswa":   data.NamaSiswa,
 				"progres":      data.Progres, // String JSON asli
 				"tahun_ajaran": data.TahunAjaran,
+				"created_at":   data.CreatedAt,
+				"semester":     data.Semester,
 			})
 		} else {
 			// Jika berhasil mengurai, gunakan array objek progres
@@ -536,6 +540,8 @@ func GetAllDataSiswa(c *gin.Context) {
 				"nama_siswa":   data.NamaSiswa,
 				"progres":      progresItems,
 				"tahun_ajaran": data.TahunAjaran,
+				"created_at":   data.CreatedAt,
+				"semester":     data.Semester,
 			})
 		}
 	}
@@ -777,6 +783,10 @@ func RekapSemesterAllSiswa(c *gin.Context) {
 		FilterKelas    *int   `json:"filter_kelas" form:"filter_kelas"`                    // Opsional: filter berdasarkan kelas tertentu
 		StartDate      string `json:"start_date" form:"start_date"`                        // Opsional: filter berdasarkan tanggal mulai (format: YYYY-MM-DD)
 		EndDate        string `json:"end_date" form:"end_date"`                            // Opsional: filter berdasarkan tanggal akhir (format: YYYY-MM-DD)
+		// CreatedAt      time.Time `gorm:"autoCreateTime" json:"created_at"`
+		CreatedAt time.Time `json:"created_at" gorm:"column:created_at;autoCreateTime"`
+		// CreatedAt time.Time `json:"created_at" gorm:"column:created_at;autoCreateTime"`
+		Semester string `json:"semester" form:"semester"`
 	}
 
 	// Coba binding dari query parameters terlebih dahulu
@@ -1051,6 +1061,8 @@ func RekapSemesterAllSiswa(c *gin.Context) {
 				"id_kelas":     siswa.IDKelas,
 				"progres":      string(progresJSON),
 				"tahun_ajaran": input.TahunAjaran,
+				"created_at":   input.CreatedAt,
+				"semester":     input.Semester,
 			}
 
 			result := tx.Table("data_siswa").Create(newData)
