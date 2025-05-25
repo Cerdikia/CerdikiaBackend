@@ -186,7 +186,9 @@ CREATE TABLE IF NOT EXISTS data_siswa (
   email VARCHAR(255) DEFAULT NULL,
   id_kelas INT DEFAULT NULL,
   progres JSON DEFAULT NULL,
+  semester ENUM('ganjil', 'genap') NOT NULL,
   tahun_ajaran VARCHAR(50) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id_data),
   KEY fk_data_email (email),
   KEY fk_data_kelas (id_kelas),
@@ -195,23 +197,23 @@ CREATE TABLE IF NOT EXISTS data_siswa (
 );
 
 -- -- Tambahkan akun admin default
--- INSERT INTO admin (email, nama, keterangan)
--- VALUES ('admin@admin.com', 'admin', 'default admin')
--- ON DUPLICATE KEY UPDATE 
---   nama = VALUES(nama), 
---   keterangan = VALUES(keterangan);
+INSERT INTO admin (email, nama, keterangan)
+VALUES 
+('mutekinoraffi@gmail.com', 'raffi', 'default admin1'),
+('martizasyam22@gmail.com', 'farhan', 'default admin2'),
+('fahmihanafi680@gmail.com', 'fahmi', 'default admin3')
+ON DUPLICATE KEY UPDATE 
+  nama = VALUES(nama), 
+  keterangan = VALUES(keterangan);
 
--- INSERT INTO mapel (id_mapel, mapel)
--- VALUES (1, 'Bahasa Indonesia');
+INSERT INTO mapel (id_mapel, mapel)
+VALUES 
+(1, 'Bahasa Indonesia'),
+(2, 'Matematika'),
+(3, 'Bahasa Inggris');
 
--- INSERT INTO mapel (id_mapel, mapel)
--- VALUES (2, 'Matematika');
-
--- INSERT INTO mapel (id_mapel, mapel)
--- VALUES (3, 'Bahasa Inggris');
-
--- INSERT INTO kelas (id_kelas, kelas)
--- VALUES (1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5'), (6, '6');
+INSERT INTO kelas (id_kelas, kelas)
+VALUES (1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5'), (6, '6');
 
 -- -- Insert guru (sekali saja)
 -- INSERT INTO guru (email, nama, jabatan)

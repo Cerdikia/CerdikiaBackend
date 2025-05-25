@@ -55,13 +55,13 @@ func main() {
 		log.Fatal("Failed to Start Cron:", err)
 	}
 
-	r.GET("/try", controllers.GetUsers)
 	r.POST("/register/:role", controllers.CreateUser)
 
 	r.POST("/login", controllers.LoginControler)
 	r.POST("/refresh", controllers.RefreshToken)
 
 	protected := r.Group("")
+	protected.GET("/try", controllers.GetUsers)
 	protected.Use(middleware.AuthMiddleware())
 	// BUT HANDLER POST MAPEL
 	// BUT HANDLER EDIT MAPEL
@@ -168,11 +168,11 @@ func main() {
 	protected.GET("/logs-periode", controllers.GetLogsByPeriod)
 
 	// =================== Rekap Smester ====================================
-	protected.POST("/rekap-semester", controllers.RekapSemester)
-	protected.POST("/rekap-semester-siswa", controllers.RekapSemesterSiswa)
+	protected.POST("/rekap-semester", controllers.RekapSemester)            // <= KEMUNGKINAN GA DI PAKE
+	protected.POST("/rekap-semester-siswa", controllers.RekapSemesterSiswa) // <= KEMUNGKINAN GA DI PAKE
 	protected.POST("/rekap-semester-all-siswa", controllers.RekapSemesterAllSiswa)
-	protected.GET("/test-logs", controllers.TestLogsRetrieval) // Test endpoint for debugging logs retrieval
 	protected.POST("/edit-tahun-ajaran", controllers.EditTahunAjaran)
+	protected.GET("/test-logs", controllers.TestLogsRetrieval) // Test endpoint for debugging logs retrieval
 	protected.GET("/rekap-semester-all", controllers.GetAllDataSiswa)
 	protected.GET("/rekap-semester/:id_data", controllers.GetDataSiswa)
 	protected.DELETE("/rekap-semester/:id_data", controllers.DeleteDataSiswa)

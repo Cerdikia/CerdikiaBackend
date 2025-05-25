@@ -11,18 +11,19 @@ func GetSiswaBeingVerified() (*[]users.VerifiedUserResponse, string) {
 
 	db := config.DB
 	query := `
-		SELECT 
-			uv.email, 
-			uv.verified_status, 
-			s.nama, 
-			s.id_kelas,
-			k.kelas
-		FROM 
-			user_verified uv
-		LEFT JOIN 
-			siswa s ON uv.email = s.email
-		LEFT JOIN 
-			kelas k ON s.id_kelas = k.id_kelas;
+		SELECT
+						uv.email,
+						uv.verified_status,
+						s.nama,
+						s.id_kelas,
+						s.image_profile,
+						k.kelas
+		FROM
+						user_verified uv
+		LEFT JOIN
+						siswa s ON uv.email = s.email
+		LEFT JOIN
+						kelas k ON s.id_kelas = k.id_kelas;
 	`
 
 	tmpResult := db.Raw(query).Scan(&verifiedUsers)
@@ -45,6 +46,7 @@ func GetSiswaBeingVerifiedByEmail(email string) (*users.VerifiedUserResponse, st
 			uv.verified_status, 
 			s.nama, 
 			s.id_kelas,
+			s.image_profile,
 			k.kelas
 		FROM 
 			user_verified uv

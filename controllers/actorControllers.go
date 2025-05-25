@@ -290,6 +290,32 @@ func UpdateDataActor(c *gin.Context) {
 			Data:    result,
 		}
 
+	// ### kepalaSekolah ###
+	case "kepalaSekolah":
+		var guru users.Guru
+		if err := c.ShouldBindJSON(&guru); err != nil {
+			response = models.BaseResponseModel{
+				Message: err.Error(),
+				Data:    nil,
+			}
+			c.JSON(http.StatusBadRequest, response)
+			return
+		}
+
+		result, message := repositories.UpdateDataGuru(guru)
+		if message != "Success" {
+			response = models.BaseResponseModel{
+				Message: message,
+				Data:    nil,
+			}
+			c.JSON(http.StatusBadRequest, response)
+			return
+		}
+		response = models.BaseResponseModel{
+			Message: message,
+			Data:    result,
+		}
+
 		// ### ADMIN ###
 
 	case "admin":
@@ -349,6 +375,8 @@ func DeleteDataActor(c *gin.Context) {
 	case "admin":
 		query = "DELETE FROM admin WHERE email = ?"
 	case "guru":
+		query = "DELETE FROM guru WHERE email = ?"
+	case "kepalaSekolah":
 		query = "DELETE FROM guru WHERE email = ?"
 	default:
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -467,7 +495,7 @@ func UpdateSiswaImageProfile(c *gin.Context) {
 	email := c.Param("email")
 	role := c.Param("role")
 	db := config.DB
-	validRoles := map[string]bool{"siswa": true, "admin": true, "guru": true}
+	validRoles := map[string]bool{"siswa": true, "admin": true, "guru": true, "kepalaSekolah": true}
 
 	if !validRoles[role] {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Role tidak valid. Gunakan: siswa, admin, guru"})
@@ -487,6 +515,11 @@ func UpdateSiswaImageProfile(c *gin.Context) {
 			return
 		}
 	case "guru":
+		if err := db.Model(&users.Guru{}).Where("email = ?", email).Update("image_profile", uploadResult.Url).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Guru tidak ditemukan"})
+			return
+		}
+	case "kepalaSekolah":
 		if err := db.Model(&users.Guru{}).Where("email = ?", email).Update("image_profile", uploadResult.Url).Error; err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Guru tidak ditemukan"})
 			return

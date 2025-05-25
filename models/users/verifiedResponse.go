@@ -7,4 +7,5 @@ type VerifiedUserResponse struct {
 	Nama           string `json:"nama,omitempty"`
 	IdKelas        *int   `json:"id_kelas,omitempty"`
 	Kelas          string `json:"kelas,omitempty"`
+	ImageProfile   string `json:"image_profile,omitempty" gorm:"type:text"`
 }

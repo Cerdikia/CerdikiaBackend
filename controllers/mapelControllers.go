@@ -21,7 +21,7 @@ type MapelWithModuleCount struct {
 func GetAllMapel(c *gin.Context) {
 	// 	// Ambil query params
 	page := c.DefaultQuery("page", "1")
-	limit := c.DefaultQuery("limit", "10")
+	limit := c.DefaultQuery("limit", "100")
 
 	// 	// Konversi ke int
 	pageInt, err := strconv.Atoi(page)
@@ -35,6 +35,17 @@ func GetAllMapel(c *gin.Context) {
 	}
 
 	offset := (pageInt - 1) * limitInt
+
+	// Step 1: Ambil total jumlah mapel
+	var jumlahMapel int64
+	if err := config.DB.Table("mapel").Count(&jumlahMapel).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, models.BaseResponseModel{
+			Message: "Gagal menghitung jumlah mapel",
+			Data:    nil,
+			Total:   0,
+		})
+		return
+	}
 
 	// Query to get mapels with module count
 	var mapelsWithCount []MapelWithModuleCount
@@ -65,6 +76,7 @@ func GetAllMapel(c *gin.Context) {
 	c.JSON(http.StatusOK, models.BaseResponseModel{
 		Message: "success get data mapel",
 		Data:    mapelsWithCount,
+		Total:   int(jumlahMapel),
 	})
 }
 
